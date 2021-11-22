@@ -1,0 +1,37 @@
+server:
+  port: 5001
+
+spring:
+  application:
+    name: @artifactId@
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_HOST:pig-register}:${NACOS_PORT:8848}
+        namespace:
+        #namespace: ef45d179-ebfa-4e09-8df3-a9eac10c0308 #local
+        #namespace: 981824c4-9651-447c-ab1a-184b6755cff3 #lei-public
+        #namespace: 4e21b68a-1a22-420f-9a26-78cbf317dc99 #test
+
+
+        #namespace: 4e21b68a-1a22-420f-9a26-78cbf317dc99 #test
+        #namespace: 4e21b68a-1a22-420f-9a26-78cbf317dc99 #test
+        #namespace: f709c3d4-ceb5-4919-be30-0164dcb15661 #test-local
+        #namespace: 4e21b68a-1a22-420f-9a26-78cbf317dc99 #test
+        #server-addr: ${NACOS_HOST:iot-register}:${NACOS_PORT:8848}
+      #         server-addr: 8.134.18.217:8848
+      #        namespace: 4e21b68a-1a22-420f-9a26-78cbf317dc99 #test
+      #         namespace: a94cbfdd-507d-48d3-a766-917f8a6e06d3 #dev
+      #        namespace: f709c3d4-ceb5-4919-be30-0164dcb15661  #inner
+      #        namespace: f709c3d4-ceb5-4919-be30-0164dcb15661 #test-local
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        file-extension: yml
+        shared-configs:
+          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+  profiles:
+    active: dev
+
+  autoconfigure:
+    exclude: com.pig4cloud.pig.common.core.config.JacksonConfiguration #排除全局Jackson配置，避免admin server时间显示问题

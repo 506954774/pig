@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  pig4cloud.pig.common.mq.config.RabbitMqConfig,\
+  pig4cloud.pig.common.mq.sender.RabbitMqSender
