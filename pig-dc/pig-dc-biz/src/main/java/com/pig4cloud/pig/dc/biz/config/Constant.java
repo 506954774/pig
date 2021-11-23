@@ -14,4 +14,5 @@ public class Constant {
 	public static final String TOKEN="";
 	public static final String AES_KEY="";
 	public static final String PASSWORD = "123456";
+	public static final String OPERATED = "1";
 }
