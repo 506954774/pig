@@ -28,29 +28,43 @@ public class AddProductDTO extends Model<AddProductDTO> {
     private static final long serialVersionUID = 1L;
 
 
-	@NotNull(message = "产品名称不可为空")
-	@NotEmpty(message = "产品名称不可为空")
-    @ApiModelProperty( value = "产品名称" , required = true)
-    private String productName;
-
-	@NotNull(message = "封面图片地址不可为空")
-	@NotEmpty(message = "封面图片地址不可为空")
-    @ApiModelProperty( value = "封面图片地址" , required = true)
-    private String imageUrl;
-
-	@NotNull(message = "详细信息不可为空")
-	@NotEmpty(message = "详细信息不可为空")
-    @ApiModelProperty( value = "详细信息" , required = true)
-    private String productDesc;
-
-	@NotNull(message = "价格不可为空")
-	@ApiModelProperty( value = "价格,单位:人命币,元" , required = true)
-	private Double productPrice;
 
   /*  @ApiModelProperty( value = "排序,大的在前面" , required = true)
     private Integer productSort=999;
 */
 
+
+	@NotNull(message = "产品名称不可为空")
+	@NotEmpty(message = "产品名称不可为空")
+	@ApiModelProperty( value = "产品名称" , required = true)
+	private String productName;
+
+
+	@NotNull(message = "封面图片地址不可为空")
+	@NotEmpty(message = "封面图片地址不可为空")
+	@ApiModelProperty( value = "封面图片地址" , required = true)
+	private String imageUrl;
+
+	@NotNull(message = "小标题不可为空")
+	@NotEmpty(message = "小标题不可为空")
+	@ApiModelProperty( value = "小标题" , required = true)
+	private String productSubName;
+
+	@NotNull(message = "价格不可为空")
+	@ApiModelProperty( value = "价格" , required = true)
+	private Double productPrice;
+
+	@ApiModelProperty( value = "排序,大的在前面" , required = true)
+	private Integer productSort=999;
+
+
+/*	@NotNull(message = "富文本不可为空")
+	@NotEmpty(message = "富文本不可为空")*/
+	@ApiModelProperty( value = "富文本" , required = true)
+	private String content;
+
+	@ApiModelProperty( value = "是否首页推荐,1,是" , required = true)
+	private Integer recommendFlag;
 
 
 }

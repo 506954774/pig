@@ -8,6 +8,7 @@ import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.pig.dc.api.dto.AddOfferDTO;
 import com.pig4cloud.pig.dc.api.dto.AddProductDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
+import com.pig4cloud.pig.dc.api.entity.OscEnrollInfo;
 import com.pig4cloud.pig.dc.api.entity.OscProduct;
 import com.pig4cloud.pig.dc.biz.service.IOscProductService;
 import io.swagger.annotations.Api;
@@ -88,9 +89,13 @@ public class ProductController {
 		Page page=new Page();
 		page.setCurrent(dto.getCurrent());
 		page.setSize(dto.getSize());
+		final QueryPageDTO finalDto = dto;
 		Page page1 = iOscProductService.getBaseMapper().selectPage(
 				page, Wrappers.<OscProduct>query().lambda()
-						.like(!TextUtils.isEmpty(dto.getKeyword()),OscProduct::getProductName, dto.getKeyword())
+						.and(!TextUtils.isEmpty(dto.getKeyword()),wrapper -> wrapper
+								. like(OscProduct::getProductName, finalDto.getKeyword())
+								.or(). like(OscProduct::getProductSubName, finalDto.getKeyword()))
+						//.like(!TextUtils.isEmpty(dto.getKeyword()),OscProduct::getProductName, dto.getKeyword())
 				.orderByDesc(OscProduct::getProductPrice)
 
 		);

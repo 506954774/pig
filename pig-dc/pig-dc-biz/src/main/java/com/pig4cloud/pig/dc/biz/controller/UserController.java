@@ -18,16 +18,15 @@ package com.pig4cloud.pig.dc.biz.controller;
 
 import com.pig4cloud.pig.admin.api.feign.RemoteOpenUserService;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.dc.api.dto.WechatLoginDto2;
 import com.pig4cloud.pig.dc.biz.service.impl.AuthServiceImpl;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author lengleng
@@ -48,19 +47,25 @@ public class UserController {
 
 
 
-
-
 	@PostMapping("/auth/wechat_login")
 	public R wecahtLogin(
 					  @RequestParam String code,
 					  @RequestParam(required = false) String iv,
-					  @RequestParam(required = false) String encryptedData) {
+					  @RequestParam(required = false) String encryptedData,
+	                  @RequestBody WechatLoginDto2 dto
+	) {
 
-		return R.ok(authService.wecahtLogin(code,iv,encryptedData));
+		return R.ok(authService.wecahtLogin(code,iv,encryptedData,dto));
 	}
 
 
 
+
+	@ApiIgnore
+	@PostMapping("/auth/regist")
+	public R regist(@RequestParam String username) {
+		return R.ok(authService.regist(username));
+	}
 
 
 

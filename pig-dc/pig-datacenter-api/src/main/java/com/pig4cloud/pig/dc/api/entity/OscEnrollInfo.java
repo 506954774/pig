@@ -2,6 +2,7 @@ package com.pig4cloud.pig.dc.api.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -65,6 +66,7 @@ public class OscEnrollInfo extends Model<OscEnrollInfo> {
     @ApiModelProperty( value = "状态,0正常 1冻结" , required = true)
     private String lockFlag;
 
+	@TableLogic
     @ApiModelProperty( value = "删除标识,0未删除 1已删除" , required = true)
     private String delFlag;
 

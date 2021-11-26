@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
+import com.pig4cloud.pig.dc.api.entity.OscBanner;
 import com.pig4cloud.pig.dc.api.entity.OscEnrollInfo;
 import com.pig4cloud.pig.dc.biz.config.Constant;
 import com.pig4cloud.pig.dc.biz.service.IOscEnrollInfoService;
@@ -58,8 +59,13 @@ public class EnrollController {
 		Page page=new Page();
 		page.setCurrent(dto.getCurrent());
 		page.setSize(dto.getSize());
+		final QueryPageDTO finalDto = dto;
+
 		Page page1 = iOscBannerService.getBaseMapper().selectPage(
 				page, Wrappers.<OscEnrollInfo>query().lambda()
+						.and(!TextUtils.isEmpty(dto.getKeyword()),wrapper -> wrapper
+								. like(OscEnrollInfo::getUserName, finalDto.getKeyword())
+								.or(). like(OscEnrollInfo::getMajorName, finalDto.getKeyword()))
 						.like(!TextUtils.isEmpty(dto.getKeyword()),OscEnrollInfo::getUserName, dto.getKeyword())
 				.orderByDesc(OscEnrollInfo::getCreateTime)
 
@@ -85,7 +91,7 @@ public class EnrollController {
 	 * @return
 	 */
 	@ApiOperation(value = "处理留言 ", notes = "处理留言 ")
-	@GetMapping("/operate/{id}" )
+	@PostMapping("/operate/{id}" )
 	public R update( @PathVariable Integer id) {
 		OscEnrollInfo oscEnrollInfo = iOscBannerService.getBaseMapper().selectById(id);
 		if(oscEnrollInfo!=null){

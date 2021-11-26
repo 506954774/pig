@@ -35,5 +35,12 @@ public class AddNewsDTO extends Model<AddNewsDTO> {
     @ApiModelProperty( value = "新闻地址" , required = true)
     private String webUrl;
 
+	@NotNull(message = "缩略图不可为空")
+	@NotEmpty(message = "缩略图不可为空")
+	@ApiModelProperty( value = "缩略图" , required = true)
+	private String iocnUrl;
+
+	@ApiModelProperty( value = "首页推荐 0 否 1 是" , required = true)
+	private Integer recommendFlag;
 
 }

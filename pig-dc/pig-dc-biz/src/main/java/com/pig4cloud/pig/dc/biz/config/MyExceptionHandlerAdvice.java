@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
  * 创建/修改时间: 2021/8/6 17:21
  * Copyright :  版权所有
  **/
-@ControllerAdvice
+//@ControllerAdvice
 public class MyExceptionHandlerAdvice {
 
     /**

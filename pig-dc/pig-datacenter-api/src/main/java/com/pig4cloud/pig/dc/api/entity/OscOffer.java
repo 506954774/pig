@@ -2,6 +2,7 @@ package com.pig4cloud.pig.dc.api.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -49,6 +50,7 @@ public class OscOffer extends Model<OscOffer> {
     @ApiModelProperty( value = "状态,0正常 1冻结" , required = true)
     private String lockFlag;
 
+	@TableLogic
     @ApiModelProperty( value = "删除标识,0未删除 1已删除" , required = true)
     private String delFlag;
 
@@ -60,5 +62,14 @@ public class OscOffer extends Model<OscOffer> {
 
     @ApiModelProperty( value = "创建人" , required = true)
     private String createBy;
+
+	@ApiModelProperty( value = "是否首页推荐 0否 1是" , required = true)
+	private Integer recommendFlag;
+
+	@ApiModelProperty( value = "内容,富文本" , required = true)
+	private String content;
+
+	@ApiModelProperty( value = "专业名称" , required = true)
+	private String majorName;
 
 }

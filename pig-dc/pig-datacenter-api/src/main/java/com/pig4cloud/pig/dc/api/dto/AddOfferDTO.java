@@ -40,14 +40,26 @@ public class AddOfferDTO extends Model<AddOfferDTO> {
     @ApiModelProperty( value = "封面图片地址" , required = true)
     private String imageUrl;
 
-	@NotNull(message = "详情界面的web地址不可为空")
+	/*@NotNull(message = "详情界面的web地址不可为空")
 	@NotEmpty(message = "详情界面的web地址不可为空")
     @ApiModelProperty( value = "详情界面的web地址" , required = true)
     private String webUrl;
-
+*/
     @ApiModelProperty( value = "排序,大的在前面" , required = true)
     private Integer offerSort=999;
 
 
+	@ApiModelProperty( value = "是否首页推荐 0否 1是" , required = true)
+	private Integer recommendFlag;
+
+	@NotNull(message = "详情内容不可为空")
+	@NotEmpty(message = "详情内容不可为空")
+	@ApiModelProperty( value = "内容,富文本" , required = true)
+	private String content;
+
+	@NotNull(message = "专业名称不可为空")
+	@NotEmpty(message = "专业名称不可为空")
+	@ApiModelProperty( value = "专业名称" , required = true)
+	private String majorName;
 
 }

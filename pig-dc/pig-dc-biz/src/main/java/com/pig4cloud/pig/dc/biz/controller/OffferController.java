@@ -7,6 +7,7 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.pig.dc.api.dto.AddOfferDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
+import com.pig4cloud.pig.dc.api.entity.OscEnrollInfo;
 import com.pig4cloud.pig.dc.api.entity.OscOffer;
 import com.pig4cloud.pig.dc.biz.service.IOscOfferService;
 import io.swagger.annotations.Api;
@@ -87,9 +88,21 @@ public class OffferController {
 		Page page=new Page();
 		page.setCurrent(dto.getCurrent());
 		page.setSize(dto.getSize());
+		final QueryPageDTO finalDto = dto;
 		Page page1 = iOscOfferService.getBaseMapper().selectPage(
 				page, Wrappers.<OscOffer>query().lambda()
-						.like(!TextUtils.isEmpty(dto.getKeyword()),OscOffer::getStuName, dto.getKeyword())
+						.and(!TextUtils.isEmpty(dto.getKeyword()),
+
+								wrapper1->wrapper1.like(OscOffer::getSchoolDesc, finalDto.getKeyword())
+								.or(
+
+								wrapper -> wrapper
+								. like(OscOffer::getStuName, finalDto.getKeyword())
+								.or(). like(OscOffer::getMajorName, finalDto.getKeyword()
+										)
+								)
+						)
+						//.like(!TextUtils.isEmpty(dto.getKeyword()),OscOffer::getStuName, dto.getKeyword())
 				.orderByDesc(OscOffer::getOfferSort)
 
 		);

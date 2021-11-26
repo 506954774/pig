@@ -107,4 +107,11 @@ public class SysUser implements Serializable {
 	@TableLogic
 	private String delFlag;
 
+
+	/**
+	 * 昵称
+	 */
+	@ApiModelProperty(value = "昵称")
+	private String nickname;
+
 }

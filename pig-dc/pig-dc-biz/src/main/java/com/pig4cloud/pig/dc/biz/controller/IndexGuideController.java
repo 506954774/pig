@@ -7,6 +7,7 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.pig.dc.api.dto.AddIndexGuideDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
+import com.pig4cloud.pig.dc.api.entity.OscEnrollInfo;
 import com.pig4cloud.pig.dc.api.entity.OscIndexGuide;
 import com.pig4cloud.pig.dc.biz.service.IOscIndexGuideService;
 import io.swagger.annotations.Api;
@@ -87,9 +88,13 @@ public class IndexGuideController {
 		Page page=new Page();
 		page.setCurrent(dto.getCurrent());
 		page.setSize(dto.getSize());
+		final QueryPageDTO finalDto = dto;
 		Page page1 = iOscIndexGuideService.getBaseMapper().selectPage(
 				page, Wrappers.<OscIndexGuide>query().lambda()
-						.like(!TextUtils.isEmpty(dto.getKeyword()),OscIndexGuide::getTitle, dto.getKeyword())
+						.and(!TextUtils.isEmpty(dto.getKeyword()),wrapper -> wrapper
+								. like(OscIndexGuide::getTitle, finalDto.getKeyword())
+								.or(). like(OscIndexGuide::getContent, finalDto.getKeyword()))
+						//.like(!TextUtils.isEmpty(dto.getKeyword()),OscIndexGuide::getTitle, dto.getKeyword())
 				.orderByDesc(OscIndexGuide::getIndexSort)
 
 		);

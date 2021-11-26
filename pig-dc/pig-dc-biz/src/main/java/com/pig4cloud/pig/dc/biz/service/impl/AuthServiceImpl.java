@@ -15,6 +15,7 @@
  */
 
 package com.pig4cloud.pig.dc.biz.service.impl;
+import java.util.Date;
 
 import cn.binarywang.wx.miniapp.api.WxMaUserService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
@@ -25,8 +26,11 @@ import com.pig4cloud.pig.admin.api.feign.RemoteOpenUserService;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.dc.api.dto.WechatLoginDto;
+import com.pig4cloud.pig.dc.api.dto.WechatLoginDto2;
+import com.pig4cloud.pig.dc.api.entity.OscUserInfo;
 import com.pig4cloud.pig.dc.biz.config.Constant;
 import com.pig4cloud.pig.dc.biz.exceptions.BizException;
+import com.pig4cloud.pig.dc.biz.service.IOscUserInfoService;
 import com.ulisesbocchio.jasyptspringboot.encryptor.DefaultLazyEncryptor;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +87,8 @@ public class AuthServiceImpl {
 
 	private final MyWxServiceImpl myWxService;
 
+	private final IOscUserInfoService iOscUserInfoService;
+
 
 	/**
 	 * @Name:
@@ -93,15 +99,12 @@ public class AuthServiceImpl {
 	 * @Date:2021/11/21 18:04
 	 *
 	 * */
-	public OAuth2AccessToken wecahtLogin(String code, String iv, String encryptedData) {
+	public OAuth2AccessToken wecahtLogin(String code, String iv, String encryptedData, WechatLoginDto2 dto) {
 
 		if(TextUtils.isEmpty(code)||TextUtils.isEmpty(iv)||TextUtils.isEmpty(encryptedData)){
 			throw new BizException("参数不合法!");
 		}
 
-		if(!TextUtils.isEmpty(code)){
-			throw new BizException("参数不合法!");
-		}
 
 		try {
 			iv = URLEncoder.encode(iv,"UTF-8").replace("%3D","=").replace("%2F","/");
@@ -110,31 +113,21 @@ public class AuthServiceImpl {
 			e.printStackTrace();
 			throw new BizException("参数不合法!");
 		}
-//        log.info("删除会话信息redis缓存..");
-//        log.info("小程序绑定平台用户:iv=" + iv + ",encryptedData=" + encryptedData);
-//        log.info("小程序绑定平台用户: session --->" + sessionResult);
-
-
-
 
 		WxMaJscode2SessionResult result = null;
 		try {
 			result = myWxService.getUserService().getSessionInfo(code);
+			log.info("myWxService.getUserService().getSessionInfo(code).."+result);
 		} catch (WxErrorException e) {
 			e.printStackTrace();
 		}
-//        log.info("微信小程序响应报文:{}", result);
-//        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(WxMaJscode2SessionResult.class));
-//        redisTemplate.opsForHash().put("auth:mini:session", code, result);
-//        HashMap<String, String> map = new HashMap<>();
-//        map.put("unionId",result.getUnionid());
-//        map.put("openId",result.getOpenid());
-//        map.put("info",result.getUnionid());
 
-//        WxMaService wxMaService = WxMaInitConfigRunner.getMpServices().get(sysProgram.getAppid());
+		log.info("myWxService:"+myWxService);
+
 		WxMaUserService userService = myWxService.getUserService();
+		log.info("myWxService.getUserService():"+userService);
 		WxMaPhoneNumberInfo phoneNumberInfo = userService.getPhoneNoInfo(result.getSessionKey(), encryptedData, iv);
-
+		log.info("调用微信接口,解密获取电话号码:"+phoneNumberInfo);
 
 
 		if (phoneNumberInfo==null|| TextUtils.isEmpty(phoneNumberInfo.getPhoneNumber())) {
@@ -154,26 +147,50 @@ public class AuthServiceImpl {
 
 			List<Integer> roles=new ArrayList<>();
 
-			// TODO: 2021/11/8 数据库里,先配置一个"普通用户"的角色,id是5
-			//这个角色id,注意数据库配置
+			//这个角色id,注意数据库配置,否则upms会报错
 			roles.add(5);
 			user.setRole(roles);
 			user.setDeptId(1);
 
 			//选填部分的数据
 			user.setPhone(phoneNumberInfo.getPhoneNumber());
-			//user.setAvatar(userDto.getAvatar());
-
 			user.setPassword(password);
 
-			//电话号码
-			user.setPhone("-1");
 			remoteOpenUserService.user(user,SecurityConstants.FROM_IN);
+
+			//再查一遍
+			admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
+
+			if(admin.getData()!=null){
+				SysUser data = admin.getData();
+
+				//插入数据库
+				OscUserInfo bean=new OscUserInfo();
+				bean.setUserId(data.getUserId());
+				if(dto!=null){
+					bean.setNickname(dto.getNickName());
+					bean.setAvatar(dto.getAvatar());
+				}
+				iOscUserInfoService.getBaseMapper().insert(bean);
+			}
 		}
 		//已有用户登录
 		else{
 			username=admin.getData().getUsername();
+
+			SysUser data = admin.getData();
+
+			//更新数据库
+			OscUserInfo bean=new OscUserInfo();
+			bean.setUserId(data.getUserId());
+			if(dto!=null){
+				bean.setNickname(dto.getNickName());
+				bean.setAvatar(dto.getAvatar());
+				iOscUserInfoService.getBaseMapper().updateById(bean);
+			}
+
 		}
+		log.info("调用登录接口,用户名:{},密码:{}",username,password);
 
 		return login(username,password);
 	}
@@ -366,6 +383,49 @@ public class AuthServiceImpl {
 		}
 
 		return R.ok(login(username,password));
+	}
+
+
+	/**
+	 * @Name:
+	 * @Description: 模拟注册,密码使用默认值
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/11/21 18:04
+	 *
+	 * */
+	public OAuth2AccessToken regist(String username ) {
+
+		String password=Constant.PASSWORD;
+
+		R<SysUser> admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
+
+		//新增
+		if(admin.getData()==null){
+			UserDTO user=new UserDTO();
+			user.setUsername(username);
+
+			List<Integer> roles=new ArrayList<>();
+
+			//这个角色id,注意数据库配置,否则upms会报错
+			roles.add(5);
+			user.setRole(roles);
+			user.setDeptId(1);
+
+			user.setPassword(password);
+
+
+			remoteOpenUserService.user(user,SecurityConstants.FROM_IN);
+		}
+		//已有用户登录
+		else{
+			username=admin.getData().getUsername();
+		}
+		log.info("调用登录接口,用户名:{},密码:{}",username,password);
+
+
+		return login(username,password);
 	}
 
 }

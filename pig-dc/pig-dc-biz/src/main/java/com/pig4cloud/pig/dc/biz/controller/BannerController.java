@@ -88,8 +88,11 @@ public class BannerController {
 		Page page=new Page();
 		page.setCurrent(dto.getCurrent());
 		page.setSize(dto.getSize());
+		final QueryPageDTO finalDto = dto;
 		Page page1 = iOscBannerService.getBaseMapper().selectPage(
 				page, Wrappers.<OscBanner>query().lambda()
+						/*.and(!TextUtils.isEmpty(dto.getKeyword()),wrapper -> wrapper. like(OscBanner::getTitle, finalDto.getKeyword())
+								.or(). like(OscBanner::get, finalDto.getKeyword()))*/
 						.like(!TextUtils.isEmpty(dto.getKeyword()),OscBanner::getTitle, dto.getKeyword())
 				.orderByDesc(OscBanner::getBannerSort)
 

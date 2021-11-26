@@ -2,6 +2,7 @@ package com.pig4cloud.pig.dc.api.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -41,6 +42,7 @@ public class OscNews extends Model<OscNews> {
     @ApiModelProperty( value = "状态,0正常 1冻结" , required = true)
     private String lockFlag;
 
+	@TableLogic
     @ApiModelProperty( value = "删除标识,0未删除 1已删除" , required = true)
     private String delFlag;
 
@@ -52,5 +54,11 @@ public class OscNews extends Model<OscNews> {
 
     @ApiModelProperty( value = "创建人" , required = true)
     private String createBy;
+
+	@ApiModelProperty( value = "缩略图" , required = true)
+	private String iocnUrl;
+
+	@ApiModelProperty( value = "首页推荐 0 否 1 是" , required = true)
+	private Integer recommendFlag;
 
 }

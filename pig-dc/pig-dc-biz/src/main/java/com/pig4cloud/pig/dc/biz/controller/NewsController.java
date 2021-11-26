@@ -7,6 +7,7 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.pig.dc.api.dto.AddNewsDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
+import com.pig4cloud.pig.dc.api.entity.OscEnrollInfo;
 import com.pig4cloud.pig.dc.api.entity.OscNews;
 import com.pig4cloud.pig.dc.biz.service.IOscNewsService;
 import io.swagger.annotations.Api;
@@ -87,9 +88,13 @@ public class NewsController {
 		Page page=new Page();
 		page.setCurrent(dto.getCurrent());
 		page.setSize(dto.getSize());
+		final QueryPageDTO finalDto = dto;
 		Page page1 = iOscNewsService.getBaseMapper().selectPage(
 				page, Wrappers.<OscNews>query().lambda()
-						.like(!TextUtils.isEmpty(dto.getKeyword()),OscNews::getTitle, dto.getKeyword())
+						.and(!TextUtils.isEmpty(dto.getKeyword()),wrapper -> wrapper
+								. like(OscNews::getTitle, finalDto.getKeyword())
+								.or(). like(OscNews::getWebUrl, finalDto.getKeyword()))
+						//.like(!TextUtils.isEmpty(dto.getKeyword()),OscNews::getTitle, dto.getKeyword())
 				.orderByDesc(OscNews::getCreateTime)
 
 		);

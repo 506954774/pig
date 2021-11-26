@@ -2,6 +2,7 @@ package com.pig4cloud.pig.dc.api.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -34,7 +35,15 @@ public class OscIndexGuide extends Model<OscIndexGuide> {
     @ApiModelProperty( value = "标题" , required = true)
     private String title;
 
-    @ApiModelProperty( value = "icon的地址" , required = true)
+
+	@ApiModelProperty( value = "类型 0:首页导航" , required = true)
+	private Integer indexType;
+
+	@ApiModelProperty( value = "内容,富文本" , required = true)
+	private String content;
+
+
+	@ApiModelProperty( value = "icon的地址" , required = true)
     private String iconUrl;
 
     @ApiModelProperty( value = "内容的web地址" , required = true)
@@ -46,6 +55,7 @@ public class OscIndexGuide extends Model<OscIndexGuide> {
     @ApiModelProperty( value = "状态,0正常 1冻结" , required = true)
     private String lockFlag;
 
+	@TableLogic
     @ApiModelProperty( value = "删除标识,0未删除 1已删除" , required = true)
     private String delFlag;
 
