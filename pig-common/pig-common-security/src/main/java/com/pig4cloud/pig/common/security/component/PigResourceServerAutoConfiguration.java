@@ -17,7 +17,11 @@
 package com.pig4cloud.pig.common.security.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pig4cloud.pig.common.core.config.RtErrorHandler;
+import com.pig4cloud.pig.common.security.exception.InvalidException;
+import com.pig4cloud.pig.common.security.exception.UnauthorizedException;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,6 +40,7 @@ import java.util.Collections;
  * @author lengleng
  * @date 2020-06-23
  */
+@Slf4j
 @EnableConfigurationProperties(PermitAllUrlProperties.class)
 public class PigResourceServerAutoConfiguration {
 
@@ -62,7 +68,15 @@ public class PigResourceServerAutoConfiguration {
 	@Primary
 	@LoadBalanced
 	public RestTemplate lbRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
+
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setOutputStreaming(false); // 解决401报错时，报java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
+
+		RestTemplate restTemplate = new RestTemplate(requestFactory);
+		////////////////////////////////////
+		// ///////////////////////////////////////////////////////
+
+		//RestTemplate restTemplate = new RestTemplate();
 
 		// 传递ACCEPT JSON
 		restTemplate.setInterceptors(Collections.singletonList((request, body, execution) -> {
@@ -71,7 +85,7 @@ public class PigResourceServerAutoConfiguration {
 		}));
 
 		// 处理400 异常
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+		/*restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
 			@Override
 			@SneakyThrows
 			public void handleError(ClientHttpResponse response) {
@@ -79,7 +93,28 @@ public class PigResourceServerAutoConfiguration {
 					super.handleError(response);
 				}
 			}
+		});*/
+
+		//跳过401
+		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+			@Override
+			@SneakyThrows
+			public void handleError(ClientHttpResponse response) {
+				log.info("===========restTemplate.handleError,response.getRawStatusCode():{}",response.getRawStatusCode());
+
+				//处理401的问题
+				if (response.getRawStatusCode() == HttpStatus.UNAUTHORIZED.value()){
+					//super.handleError(response);
+					//throw new RuntimeException(String.valueOf(response.getRawStatusCode()));
+					throw new UnauthorizedException("无效的token",null);
+				}
+				else if (response.getRawStatusCode() != HttpStatus.BAD_REQUEST.value() ){
+					super.handleError(response);
+				}
+			}
 		});
+		//restTemplate.setErrorHandler(new RtErrorHandler());
+
 		return restTemplate;
 	}
 

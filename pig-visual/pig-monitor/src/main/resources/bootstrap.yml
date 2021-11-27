@@ -8,7 +8,7 @@ spring:
     nacos:
       discovery:
         server-addr: ${NACOS_HOST:pig-register}:${NACOS_PORT:8848}
-        namespace:
+        namespace: test
         #namespace: ef45d179-ebfa-4e09-8df3-a9eac10c0308 #local
         #namespace: 981824c4-9651-447c-ab1a-184b6755cff3 #lei-public
         #namespace: 4e21b68a-1a22-420f-9a26-78cbf317dc99 #test

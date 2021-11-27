@@ -16,8 +16,10 @@
 
 package com.pig4cloud.pig.common.core.config;
 
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -27,9 +29,20 @@ import org.springframework.web.client.RestTemplate;
 @Configuration(proxyBeanMethods = false)
 public class RestTemplateConfiguration {
 
-	@Bean
+	/*@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
-	}
+	}*/
 
+	@Bean
+	@LoadBalanced
+	public RestTemplate restTemplate() {
+
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setOutputStreaming(false); // 解决401报错时，报java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
+		RestTemplate restTemplate = new RestTemplate(requestFactory);
+		restTemplate.setErrorHandler(new RtErrorHandler());
+
+		return restTemplate;
+	}
 }
