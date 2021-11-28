@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pig4cloud.pig.dc.biz.mapper.OscMajorMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.pig4cloud.pig.dc.api.entity.OscMajor">
+        <id column="id" property="id" />
+        <result column="major_name" property="majorName" />
+        <result column="major_name_eng" property="majorNameEng" />
+        <result column="university_id" property="universityId" />
+        <result column="college_id" property="collegeId" />
+        <result column="education_level" property="educationLevel" />
+        <result column="desc_content" property="descContent" />
+        <result column="requirement_content" property="requirementContent" />
+        <result column="member_content" property="memberContent" />
+        <result column="recommend_flag" property="recommendFlag" />
+        <result column="lock_flag" property="lockFlag" />
+        <result column="del_flag" property="delFlag" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_by" property="createBy" />
+    </resultMap>
+
+	<select id="selectMajorList" resultType="com.pig4cloud.pig.dc.api.vo.OscMajorVo">
+		SELECT
+			om.id id,
+			om.major_name majorName,
+			om.major_name_eng majorNameEng,
+			om.education_level educationLevel,
+			ou.university_name universityName,
+			ou.university_name_eng universityNameEng,
+			ou.logo_url logoUrl,
+			ou.qs_rank qsRank,
+			ou.country_name countryName,
+			ou.province_name provinceName,
+			ou.city_name cityName,
+			oc.college_name collegeName,
+			oc.college_name_eng collegeNameEng
+		FROM
+			osc_major om
+				LEFT JOIN osc_university ou ON om.university_id = ou.id
+				LEFT JOIN osc_college oc ON om.college_id = oc.id
+				LEFT JOIN osc_area oa ON ou.area_id = oa.id
+		WHERE
+			om.del_flag = 0
+		<if test="param.universityId !=null   ">
+			and   om.university_id=  #{param.universityId}
+		</if>
+		<if test="param.collegeId !=null   ">
+			and   om.college_id=  #{param.collegeId}
+		</if>
+		<if test="param.educationLevel !=null   ">
+			and   om.education_level=  #{param.educationLevel}
+		</if>
+		<if test="param.keyword!=null and param.keyword!='' ">
+			and   (
+			om.major_name like concat('%', #{param.keyword},'%')
+			or om.major_name_eng like concat('%', #{param.keyword},'%')
+
+			or ou.university_name like concat('%', #{param.keyword},'%')
+			or ou.university_name_eng like concat('%', #{param.keyword},'%')
+			or ou.country_name like concat('%', #{param.keyword},'%')
+			or ou.province_name like concat('%', #{param.keyword},'%')
+			or ou.city_name like concat('%', #{param.keyword},'%')
+
+			or oc.college_name like concat('%', #{param.keyword},'%')
+			or oc.college_name_eng like concat('%', #{param.keyword},'%')
+			)
+		</if>
+	</select>
+
+	<select id="selectMajor" resultType="com.pig4cloud.pig.dc.api.vo.OscMajorDetailsVo">
+		SELECT
+		om.id id,
+		om.major_name majorName,
+		om.major_name_eng majorNameEng,
+		om.education_level educationLevel,
+		ou.university_name universityName,
+		ou.university_name_eng universityNameEng,
+		ou.logo_url logoUrl,
+		ou.qs_rank qsRank,
+		ou.country_name countryName,
+		ou.province_name provinceName,
+		ou.city_name cityName,
+		oc.college_name collegeName,
+		oc.college_name_eng collegeNameEng,
+		om.desc_content majorDescContent,
+		om.requirement_content majorRequirementContent,
+		om.member_content majorMemberContent,
+		ou.image_url universityImageUrl,
+		ou.content universityDescContent
+
+		FROM
+		osc_major om
+		LEFT JOIN osc_university ou ON om.university_id = ou.id
+		LEFT JOIN osc_college oc ON om.college_id = oc.id
+		LEFT JOIN osc_area oa ON ou.area_id = oa.id
+		WHERE
+		om.del_flag = 0
+		and   om.id=  #{id}
+	</select>
+
+</mapper>
