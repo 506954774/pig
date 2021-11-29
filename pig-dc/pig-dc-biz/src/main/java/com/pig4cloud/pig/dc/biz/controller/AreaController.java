@@ -5,10 +5,15 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.common.security.util.SecurityUtils;
+import com.pig4cloud.pig.dc.api.dto.AddOscAreaDTO;
+import com.pig4cloud.pig.dc.api.dto.AddOscBannerDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
 import com.pig4cloud.pig.dc.api.entity.OscAdministrativeDivision;
 import com.pig4cloud.pig.dc.api.entity.OscArea;
+import com.pig4cloud.pig.dc.api.entity.OscBanner;
 import com.pig4cloud.pig.dc.api.vo.OscAdministrativeDivisionVo;
+import com.pig4cloud.pig.dc.biz.exceptions.BizException;
 import com.pig4cloud.pig.dc.biz.service.IOscAdministrativeDivisionService;
 import com.pig4cloud.pig.dc.biz.service.IOscAreaService;
 import com.pig4cloud.pig.dc.biz.utils.ThreeUtil;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +44,27 @@ public class AreaController {
 	private final IOscAreaService iOscAreaService;
 	private final IOscAdministrativeDivisionService iOscAdministrativeDivisionService;
 
+
+
+	/**
+	 * 新增地区
+	 * @param dto
+	 * @return
+	 */
+	@ApiOperation(value = "新增地区 ", notes = "新增地区 ")
+	@PostMapping("/add")
+	public R save(  @RequestBody @Valid AddOscAreaDTO dto) {
+
+		List<OscArea> oscAreas = iOscAreaService.getBaseMapper().selectList(Wrappers.<OscArea>query().lambda().eq(OscArea::getAreaName, dto.getAreaName()));
+		if(CollectionUtils.isNotEmpty(oscAreas)){
+			throw new BizException("该地区已存在");
+		}
+		OscArea entity= BeanUtil.copyProperties(dto,OscArea.class);
+		entity.setCreateTime(new Date());
+		entity.setCreateBy(SecurityUtils.getUser().getId()+"");
+		iOscAreaService.getBaseMapper().insert(entity);
+		return R.ok(entity.getId());
+	}
 
 	/**
 	 *  查询地区列表(国家/地区列表)

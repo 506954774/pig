@@ -1,7 +1,9 @@
 package com.pig4cloud.pig.dc.biz.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pig4cloud.pig.dc.api.dto.AddOscCollegeDTO;
+import com.pig4cloud.pig.dc.api.dto.QueryCollegePageDTO;
 import com.pig4cloud.pig.dc.api.entity.OscCollege;
 import com.pig4cloud.pig.dc.api.entity.OscUniversity;
 import com.pig4cloud.pig.dc.api.vo.OscUniversityDetailsVo;
@@ -41,6 +43,17 @@ public interface IOscUniversityService extends IService<OscUniversity> {
 	 * */
 	List<OscCollege> queryCollegesByUniversityId(Integer id);
 
+
+	/**
+	 * @Name:
+	 * @Description: 查询大学的学院分页列表
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/11/28 15:22
+	 *
+	 * */
+	Page<OscCollege> queryCollegesPageByUniversityId(QueryCollegePageDTO dto);
 
 	/**
 	 * @Name:

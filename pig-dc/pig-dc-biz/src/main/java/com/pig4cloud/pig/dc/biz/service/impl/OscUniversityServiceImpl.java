@@ -3,9 +3,11 @@ package com.pig4cloud.pig.dc.biz.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.pig.dc.api.dto.AddOscCollegeDTO;
+import com.pig4cloud.pig.dc.api.dto.QueryCollegePageDTO;
 import com.pig4cloud.pig.dc.api.entity.OscCollege;
 import com.pig4cloud.pig.dc.api.entity.OscUniversity;
 import com.pig4cloud.pig.dc.api.entity.OscUniversityCollege;
@@ -17,6 +19,7 @@ import com.pig4cloud.pig.dc.biz.mapper.OscUniversityMapper;
 import com.pig4cloud.pig.dc.biz.mapper.SysDeptRelationMapper;
 import com.pig4cloud.pig.dc.biz.service.IOscUniversityService;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.util.TextUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,6 +76,26 @@ public class OscUniversityServiceImpl extends ServiceImpl<OscUniversityMapper, O
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public Page<OscCollege> queryCollegesPageByUniversityId(QueryCollegePageDTO dto) {
+		Page page=new Page();
+		page.setCurrent(dto.getCurrent());
+		page.setSize(dto.getSize());
+		OscUniversity oscUniversity = getBaseMapper().selectById(dto.getUniverstyId());
+		if(oscUniversity!=null){
+			List<OscUniversityCollege> oscUniversityColleges = oscUniversityCollegeMapper.selectList(Wrappers.<OscUniversityCollege>query().lambda()
+					.eq(OscUniversityCollege::getUniversityId, oscUniversity.getId())
+			);
+			if(CollectionUtils.isNotEmpty(oscUniversityColleges)){
+				return oscCollegeMapper.selectPage(page,Wrappers.<OscCollege>query().lambda()
+						.like(!TextUtils.isEmpty(dto.getKeyword()),OscCollege::getCollegeName,dto.getKeyword())
+						.in(OscCollege::getId, oscUniversityColleges.stream().map(bean -> bean.getCollegeId()).collect(Collectors.toList()))
+				);
+			}
+		}
+		return page;
 	}
 
 	@Transactional(rollbackFor = Exception.class)

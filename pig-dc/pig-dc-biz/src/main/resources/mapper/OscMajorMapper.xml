@@ -100,4 +100,80 @@
 		and   om.id=  #{id}
 	</select>
 
+	<select id="search" resultType="com.pig4cloud.pig.dc.api.vo.IndexSearchVo2">
+		SELECT
+			oo.id id,
+			1 type,
+			oo.image_url imageUrl ,
+			oo.stu_name title,
+			oo.school_desc content1,
+			oo.major_name content2,
+			'' content3,
+			'' content4,
+			'' content5
+		from
+			osc_offer oo
+		WHERE
+			oo.del_flag=0
+
+		union ALL
+
+		SELECT
+			one.id id,
+			2 type,
+			one.iocn_url imageUrl,
+			one.title  title,
+			'' content1,
+			'' content2,
+			'' content3,
+			'' content4,
+			'' content5
+
+		from
+			osc_news one
+		WHERE
+			one.del_flag=0
+
+		union ALL
+
+		SELECT
+			ou.id id,
+			3 type,
+			ou.logo_url imageUrl,
+			ou.university_name   title,
+			oa.area_name content1,
+			CONCAT(ou.country_name,'|',IFNULL(ou.province_name,''),'|',IFNULL(ou.city_name,'')) content2,
+			ou.qs_rank content3,
+			'' content4,
+			'' content5
+
+		FROM
+			osc_university   ou
+				LEFT JOIN osc_university_college ouc ON ou.id = ouc.university_id
+				LEFT JOIN osc_college oc ON ouc.college_id = oc.id
+				LEFT JOIN osc_area oa ON ou.area_id = oa.id
+		WHERE
+			ou.del_flag = 0
+
+		union ALL
+
+		SELECT
+			om.id id,
+			4 type,
+			ou.logo_url imageUrl,
+			om.major_name  title,
+			ou.university_name content1,
+			oa.area_name content2,
+			ou.qs_rank content3,
+			oc.college_name content3,
+			om.education_level content5
+		FROM
+			osc_major om
+				LEFT JOIN osc_university ou ON om.university_id = ou.id
+				LEFT JOIN osc_college oc ON om.college_id = oc.id
+				LEFT JOIN osc_area oa ON ou.area_id = oa.id
+		WHERE
+			om.del_flag = 0
+	</select>
+
 </mapper>

@@ -3,8 +3,10 @@ package com.pig4cloud.pig.dc.biz.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pig4cloud.pig.dc.api.dto.QueryIndexPageDTO;
 import com.pig4cloud.pig.dc.api.dto.WebQueryMajorPageDTO;
 import com.pig4cloud.pig.dc.api.entity.OscMajor;
+import com.pig4cloud.pig.dc.api.vo.IndexSearchVo2;
 import com.pig4cloud.pig.dc.api.vo.OscMajorDetailsVo;
 import com.pig4cloud.pig.dc.api.vo.OscMajorVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -45,4 +47,16 @@ public interface OscMajorMapper extends BaseMapper<OscMajor> {
 	 *
 	 * */
 	OscMajorDetailsVo selectMajor (  @Param("id") Integer id);
+
+	/**
+	 * @Name: 
+	 * @Description: 全局搜索 
+	 * @Param: 
+	 * @return: 
+	 * @Author: LeiChen
+	 * @Date:2021/11/29 10:02
+	 *
+	 * */
+	
+	Page<IndexSearchVo2>  search(IPage page, @Param("param") QueryIndexPageDTO param);
 }

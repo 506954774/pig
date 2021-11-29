@@ -134,6 +134,18 @@ public class UniversityController {
 
 
 	/**
+	 * 根据大学id查询全部学院分页列表
+	 * @param dto 参数
+	 * @return R
+	 */
+	@ApiOperation(value = "根据大学id查询全部学院列表", notes = "根据大学id查询全部学院列表")
+	@PostMapping("/colleges/page" )
+	public R queryCollegesPageByUniversityId( @RequestBody @Valid QueryCollegePageDTO dto) {
+		return R.ok(iOscUniversityService.queryCollegesPageByUniversityId(dto));
+	}
+
+
+	/**
 	 * 给大学新增学院
 	 * @param dto
 	 * @return
