@@ -36,6 +36,10 @@ public class OscMajor extends Model<OscMajor> {
     @ApiModelProperty( value = "名称,英文" , required = true)
     private String majorNameEng;
 
+
+	@ApiModelProperty( value = "类型" , required = true)
+	private String majorType;
+
     @ApiModelProperty( value = "学校id" , required = true)
     private Integer universityId;
 
@@ -53,6 +57,9 @@ public class OscMajor extends Model<OscMajor> {
 
     @ApiModelProperty( value = "会员专享,富文本" , required = true)
     private String memberContent;
+
+	@ApiModelProperty( value = "非会员,富文本" , required = true)
+	private String notMemberContent;
 
     @ApiModelProperty( value = "是否首页推荐,1,是" , required = true)
     private Integer recommendFlag;

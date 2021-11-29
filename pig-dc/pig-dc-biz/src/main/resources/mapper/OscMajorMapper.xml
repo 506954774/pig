@@ -27,6 +27,7 @@
 			om.major_name majorName,
 			om.major_name_eng majorNameEng,
 			om.education_level educationLevel,
+		    om.major_type majorType,
 			ou.university_name universityName,
 			ou.university_name_eng universityNameEng,
 			ou.logo_url logoUrl,
@@ -52,6 +53,9 @@
 		<if test="param.educationLevel !=null   ">
 			and   om.education_level=  #{param.educationLevel}
 		</if>
+		<if test="param.majorType !=null  and param.majorType!=''  ">
+			and   om.major_type=  #{param.majorType}
+		</if>
 		<if test="param.keyword!=null and param.keyword!='' ">
 			and   (
 			om.major_name like concat('%', #{param.keyword},'%')
@@ -75,6 +79,8 @@
 		om.major_name majorName,
 		om.major_name_eng majorNameEng,
 		om.education_level educationLevel,
+		om.major_type majorType,
+		om.not_member_content notMemberContent,
 		ou.university_name universityName,
 		ou.university_name_eng universityNameEng,
 		ou.logo_url logoUrl,
@@ -102,6 +108,24 @@
 
 	<select id="search" resultType="com.pig4cloud.pig.dc.api.vo.IndexSearchVo2">
 		SELECT
+			0 id,
+			0 type,
+			'' imageUrl ,
+			'' title,
+			'' content1,
+			'' content2,
+			'' content3,
+			'' content4,
+			'' content5
+		FROM
+			osc_offer
+		WHERE
+			1=2
+
+
+        <if test="param.type==null or param.type==0 or param.type==1">
+			union ALL
+			SELECT
 			oo.id id,
 			1 type,
 			oo.image_url imageUrl ,
@@ -111,14 +135,22 @@
 			'' content3,
 			'' content4,
 			'' content5
-		from
+			from
 			osc_offer oo
-		WHERE
+			WHERE
 			oo.del_flag=0
+			<if test="param.keyword!=null and param.keyword!='' ">
+				and   (
+				oo.stu_name like concat('%', #{param.keyword},'%')
+				or oo.school_desc like concat('%', #{param.keyword},'%')
+				or oo.major_name like concat('%', #{param.keyword},'%')
+				)
+			</if>
+		</if>
 
-		union ALL
-
-		SELECT
+		<if test="param.type==null or param.type==0 or param.type==2">
+			union ALL
+			SELECT
 			one.id id,
 			2 type,
 			one.iocn_url imageUrl,
@@ -128,15 +160,21 @@
 			'' content3,
 			'' content4,
 			'' content5
-
-		from
+			from
 			osc_news one
-		WHERE
+			WHERE
 			one.del_flag=0
+			<if test="param.keyword!=null and param.keyword!='' ">
+				and   (
+				one.title like concat('%', #{param.keyword},'%')
+				)
+			</if>
+		</if>
 
-		union ALL
+		<if test="param.type==null or param.type==0 or param.type==3">
+			union ALL
 
-		SELECT
+			SELECT
 			ou.id id,
 			3 type,
 			ou.logo_url imageUrl,
@@ -146,18 +184,25 @@
 			ou.qs_rank content3,
 			'' content4,
 			'' content5
-
-		FROM
+			FROM
 			osc_university   ou
-				LEFT JOIN osc_university_college ouc ON ou.id = ouc.university_id
-				LEFT JOIN osc_college oc ON ouc.college_id = oc.id
-				LEFT JOIN osc_area oa ON ou.area_id = oa.id
-		WHERE
+			LEFT JOIN osc_university_college ouc ON ou.id = ouc.university_id
+			LEFT JOIN osc_college oc ON ouc.college_id = oc.id
+			LEFT JOIN osc_area oa ON ou.area_id = oa.id
+			WHERE
 			ou.del_flag = 0
+			<if test="param.keyword!=null and param.keyword!='' ">
+				and   (
+				ou.university_name  like concat('%', #{param.keyword},'%')
+				or oa.area_name like concat('%', #{param.keyword},'%')
+				or ou.country_name like concat('%', #{param.keyword},'%')
+				)
+			</if>
+		</if>
 
-		union ALL
-
-		SELECT
+		<if test="param.type==null or param.type==0 or param.type==4">
+			union ALL
+			SELECT
 			om.id id,
 			4 type,
 			ou.logo_url imageUrl,
@@ -167,13 +212,26 @@
 			ou.qs_rank content3,
 			oc.college_name content3,
 			om.education_level content5
-		FROM
+			FROM
 			osc_major om
-				LEFT JOIN osc_university ou ON om.university_id = ou.id
-				LEFT JOIN osc_college oc ON om.college_id = oc.id
-				LEFT JOIN osc_area oa ON ou.area_id = oa.id
-		WHERE
+			LEFT JOIN osc_university ou ON om.university_id = ou.id
+			LEFT JOIN osc_college oc ON om.college_id = oc.id
+			LEFT JOIN osc_area oa ON ou.area_id = oa.id
+			WHERE
 			om.del_flag = 0
+			<if test="param.keyword!=null and param.keyword!='' ">
+				and   (
+				om.major_name  like concat('%', #{param.keyword},'%')
+				or om.major_type like concat('%', #{param.keyword},'%')
+				or ou.university_name like concat('%', #{param.keyword},'%')
+				or oc.college_name like concat('%', #{param.keyword},'%')
+
+				)
+			</if>
+		</if>
+
+
+
 	</select>
 
 </mapper>

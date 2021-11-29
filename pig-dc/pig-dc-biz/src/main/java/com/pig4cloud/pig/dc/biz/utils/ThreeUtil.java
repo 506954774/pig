@@ -76,7 +76,7 @@ public class ThreeUtil {
 		return false ;
 	}
 
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		List<OscAdministrativeDivisionVo> threeNodeList = new ArrayList<>() ;
 		threeNodeList.add(new OscAdministrativeDivisionVo(1,"节点A",0)) ;
 		threeNodeList.add(new OscAdministrativeDivisionVo(2,"节点B",0)) ;

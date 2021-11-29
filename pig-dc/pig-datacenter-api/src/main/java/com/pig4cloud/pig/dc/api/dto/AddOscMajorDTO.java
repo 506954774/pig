@@ -44,6 +44,11 @@ public class AddOscMajorDTO extends Model<AddOscMajorDTO> {
     @ApiModelProperty( value = "学院id" , required = true)
     private Integer collegeId;
 
+
+	@NotNull(message = "专业类型不可为空")
+	@ApiModelProperty( value = "类型" , required = true)
+	private String majorType;
+
 	@NotNull(message = "学历等级不可为空")
     @ApiModelProperty( value = "学历等级 0副学士 1本科 2硕士 3博士" , required = true)
     private Integer educationLevel;
@@ -57,6 +62,8 @@ public class AddOscMajorDTO extends Model<AddOscMajorDTO> {
     @ApiModelProperty( value = "会员专享,富文本" , required = true)
     private String memberContent;
 
+	@ApiModelProperty( value = "非会员,富文本" , required = true)
+	private String notMemberContent;
 
 
 

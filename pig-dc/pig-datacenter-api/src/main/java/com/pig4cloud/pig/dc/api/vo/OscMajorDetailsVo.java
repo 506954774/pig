@@ -22,6 +22,7 @@ public class OscMajorDetailsVo extends OscMajorVo{
     private static final long serialVersionUID = 1L;
 
 
+
 	@ApiModelProperty( value = "专业内容介绍,富文本" , required = true)
 	private String majorDescContent;
 
@@ -31,7 +32,8 @@ public class OscMajorDetailsVo extends OscMajorVo{
 	@ApiModelProperty( value = "会员专享,富文本" , required = true)
 	private String majorMemberContent;
 
-
+	@ApiModelProperty( value = "非会员,富文本" , required = true)
+	private String notMemberContent;
 
 
 	@ApiModelProperty( value = "封面大图地址,多个则逗号隔开" , required = true)
