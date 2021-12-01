@@ -29,6 +29,9 @@ public class WebQueryMajorPageDTO implements Serializable {
 	@ApiModelProperty( value = "学院id" , required = true)
 	private Integer collegeId;
 
+	@ApiModelProperty( value = "地区id" , required = true)
+	private Integer areaId;
+
 	@ApiModelProperty( value = "学历等级 0副学士 1本科 2硕士 3博士" , required = true)
 	private Integer educationLevel;
 

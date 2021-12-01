@@ -52,6 +52,9 @@ public class OscIndexGuide extends Model<OscIndexGuide> {
     @ApiModelProperty( value = "排序,大的在前面" , required = true)
     private Integer indexSort;
 
+	@ApiModelProperty( value = "链接类型" , required = true)
+	private Integer linkType;
+
     @ApiModelProperty( value = "状态,0正常 1冻结" , required = true)
     private String lockFlag;
 

@@ -56,6 +56,9 @@
 		<if test="param.majorType !=null  and param.majorType!=''  ">
 			and   om.major_type=  #{param.majorType}
 		</if>
+		<if test="param.areaId !=null  and param.areaId!=''  ">
+			and   ou.area_id=  #{param.areaId}
+		</if>
 		<if test="param.keyword!=null and param.keyword!='' ">
 			and   (
 			om.major_name like concat('%', #{param.keyword},'%')
@@ -122,10 +125,9 @@
 		WHERE
 			1=2
 
-
         <if test="param.type==null or param.type==0 or param.type==1">
 			union ALL
-			SELECT
+			(SELECT
 			oo.id id,
 			1 type,
 			oo.image_url imageUrl ,
@@ -146,16 +148,21 @@
 				or oo.major_name like concat('%', #{param.keyword},'%')
 				)
 			</if>
+			<if test="param.type!=null and param.type==0 ">
+				LIMIT 8
+			</if>
+			)
+
 		</if>
 
 		<if test="param.type==null or param.type==0 or param.type==2">
 			union ALL
-			SELECT
+			(SELECT
 			one.id id,
 			2 type,
 			one.iocn_url imageUrl,
 			one.title  title,
-			'' content1,
+			one.web_url content1,
 			'' content2,
 			'' content3,
 			'' content4,
@@ -169,12 +176,16 @@
 				one.title like concat('%', #{param.keyword},'%')
 				)
 			</if>
+			<if test="param.type!=null and param.type==0 ">
+				LIMIT 8
+			</if>
+			)
 		</if>
 
 		<if test="param.type==null or param.type==0 or param.type==3">
 			union ALL
 
-			SELECT
+			(SELECT
 			ou.id id,
 			3 type,
 			ou.logo_url imageUrl,
@@ -198,11 +209,16 @@
 				or ou.country_name like concat('%', #{param.keyword},'%')
 				)
 			</if>
+			<if test="param.type!=null and param.type==0 ">
+				LIMIT 8
+			</if>
+			)
 		</if>
 
 		<if test="param.type==null or param.type==0 or param.type==4">
 			union ALL
-			SELECT
+
+			(SELECT
 			om.id id,
 			4 type,
 			ou.logo_url imageUrl,
@@ -225,9 +241,40 @@
 				or om.major_type like concat('%', #{param.keyword},'%')
 				or ou.university_name like concat('%', #{param.keyword},'%')
 				or oc.college_name like concat('%', #{param.keyword},'%')
-
 				)
 			</if>
+			<if test="param.type!=null and param.type==0 ">
+				LIMIT 8
+			</if>
+			)
+		</if>
+
+		<if test="param.type==null or param.type==0 or param.type==5">
+			union ALL
+
+			(SELECT
+			op.id id,
+			5 type,
+			op.image_url imageUrl,
+			op.product_name  title,
+			op.product_price content1,
+			'' content2,
+			'' content3,
+			'' content3,
+			'' content5
+			FROM
+			osc_product op
+			WHERE
+			op.del_flag = 0
+			<if test="param.keyword!=null and param.keyword!='' ">
+				and   (
+				op.product_name  like concat('%', #{param.keyword},'%')
+				)
+			</if>
+			<if test="param.type!=null and param.type==0 ">
+				LIMIT 8
+			</if>
+			)
 		</if>
 
 

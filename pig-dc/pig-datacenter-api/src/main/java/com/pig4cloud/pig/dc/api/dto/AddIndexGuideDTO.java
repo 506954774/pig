@@ -38,10 +38,10 @@ public class AddIndexGuideDTO extends Model<AddIndexGuideDTO> {
     @ApiModelProperty( value = "icon的地址" , required = true)
     private String iconUrl;
 
-/*	@NotNull(message = "内容的web地址不可为空")
-	@NotEmpty(message = "内容的web地址不可为空")
+ 	//@NotNull(message = "内容的web地址不可为空")
+	//@NotEmpty(message = "内容的web地址不可为空")
     @ApiModelProperty( value = "内容的web地址" , required = true)
-    private String webUrl;*/
+    private String webUrl;
 
     @ApiModelProperty( value = "排序,大的在前面" , required = true)
     private Integer indexSort=999;
@@ -50,8 +50,12 @@ public class AddIndexGuideDTO extends Model<AddIndexGuideDTO> {
 	@ApiModelProperty( value = "类型 0:首页导航" , required = true)
 	private Integer indexType;
 
-	@NotNull(message = "内容不可为空")
-	@NotEmpty(message = "内容不可为空")
+
+	@ApiModelProperty( value = "链接类型" , required = true)
+	private Integer linkType;
+
+	//@NotNull(message = "内容不可为空")
+	//@NotEmpty(message = "内容不可为空")
 	@ApiModelProperty( value = "内容,富文本" , required = true)
 	private String content;
 

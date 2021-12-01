@@ -24,6 +24,9 @@ public class QueryUniversityPageDTO implements Serializable {
 	@ApiModelProperty( value = "地区id" , required = true)
 	private Integer areaId;
 
+	@ApiModelProperty( value = "地区名称" , required = true)
+	private String areaName;
+
     @ApiModelProperty( value = "关键字" , required = true)
     private String keyword;
 
