@@ -50,6 +50,7 @@ public class OscProduct extends Model<OscProduct> {
 	@ApiModelProperty( value = "状态,0正常 1冻结" , required = true)
 	private String lockFlag;
 
+	@TableLogic
 	@ApiModelProperty( value = "删除标识,0未删除 1已删除" , required = true)
 	private String delFlag;
 

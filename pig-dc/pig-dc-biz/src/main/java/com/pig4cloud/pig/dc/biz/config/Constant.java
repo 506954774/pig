@@ -15,4 +15,8 @@ public class Constant {
 	public static final String AES_KEY="";
 	public static final String PASSWORD = "123456";
 	public static final String OPERATED = "1";
+	public static final String TANANTID = "miniapp";
+
+	//系统参数:会员价格
+	public static final String MEMBER_PRICE = "MEMBER_PRICE";
 }

@@ -2,6 +2,7 @@ package com.pig4cloud.pig.dc.api.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -36,6 +37,7 @@ public class OscUserInfo extends Model<OscUserInfo> {
     @ApiModelProperty( value = "头像" , required = true)
     private String avatar;
 
+
     @ApiModelProperty( value = "部门ID" , required = true)
     private Integer deptId;
 
@@ -48,7 +50,8 @@ public class OscUserInfo extends Model<OscUserInfo> {
     @ApiModelProperty( value = "0-正常，9-锁定" , required = true)
     private String lockFlag;
 
-    @ApiModelProperty( value = "0-正常，1-删除" , required = true)
+	@TableLogic
+	@ApiModelProperty( value = "0-正常，1-删除" , required = true)
     private String delFlag;
 
 
