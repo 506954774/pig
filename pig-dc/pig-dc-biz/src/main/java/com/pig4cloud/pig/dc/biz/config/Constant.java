@@ -1,5 +1,7 @@
 package com.pig4cloud.pig.dc.biz.config;
 
+import java.math.BigDecimal;
+
 /**
  * Constan
  * 责任人:  ChenLei
@@ -19,4 +21,13 @@ public class Constant {
 
 	//系统参数:会员价格
 	public static final String MEMBER_PRICE = "MEMBER_PRICE";
+	public static final int ORDER_LIMIT = 100000;
+	//微信是按分传参的
+	public static final int PRICE_TIME = 100;
+	public static final BigDecimal TIMES= new BigDecimal(PRICE_TIME);
+	public static final String CNY = "CNY";
+	public static final String PREPAY_ID = "prepay_id";
+	public static final String SEPCTOR = ",";
+	//没有支付则自动设置为已取消
+	public static final Long DELAY_TIME = 1*60*1000L;
 }

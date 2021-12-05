@@ -47,12 +47,20 @@ public class OscUserInfo extends Model<OscUserInfo> {
     @ApiModelProperty( value = "修改时间" , required = true)
     private Date updateTime;
 
-    @ApiModelProperty( value = "0-正常，9-锁定" , required = true)
+    @ApiModelProperty( value = "0-正常，1-锁定" , required = true)
     private String lockFlag;
+
+    @ApiModelProperty( value = "0-非会员，1-会员" , required = true)
+    private String memberFlag;
 
 	@TableLogic
 	@ApiModelProperty( value = "0-正常，1-删除" , required = true)
     private String delFlag;
 
+	@ApiModelProperty( value = "openid" , required = true)
+	private String openid;
+
+	@ApiModelProperty( value = "电话号码" , required = true)
+	private String phone;
 
 }

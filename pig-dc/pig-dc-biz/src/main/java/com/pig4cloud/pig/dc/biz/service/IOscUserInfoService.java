@@ -13,4 +13,14 @@ import com.pig4cloud.pig.dc.api.entity.OscUserInfo;
  */
 public interface IOscUserInfoService extends IService<OscUserInfo> {
 
+	/**
+	 * @Name:
+	 * @Description: 查询用户信息
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/4 15:17
+	 *
+	 * */
+    OscUserInfo details(Integer id);
 }

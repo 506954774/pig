@@ -61,5 +61,7 @@ public class WechatConfig {
 	private String domain;
 	@Value("${wechat.pay.v3.miniapp.cert-path}")
 	private String certPath;
+	@Value("${wechat.notifyUrl}")
+	private String notifyUrl;
 
 }

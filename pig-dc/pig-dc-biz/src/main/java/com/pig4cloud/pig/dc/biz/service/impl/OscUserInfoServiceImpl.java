@@ -19,4 +19,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OscUserInfoServiceImpl extends ServiceImpl<OscUserInfoMapper, OscUserInfo> implements IOscUserInfoService {
 
+
+	@Override
+	public OscUserInfo details(Integer id) {
+		return getBaseMapper().selectById(id);
+	}
 }

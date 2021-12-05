@@ -76,6 +76,12 @@
 			<artifactId>weixin-java-mp</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>cn.felord</groupId>
+			<artifactId>payment-spring-boot-starter</artifactId>
+			<version>1.0.11.RELEASE</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -87,6 +93,20 @@
 			<plugin>
 				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<!-- 过滤后缀为pem、pfx的证书文件 -->
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>p12</nonFilteredFileExtension>
+						<nonFilteredFileExtension>pem</nonFilteredFileExtension>
+						<nonFilteredFileExtension>pfx</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

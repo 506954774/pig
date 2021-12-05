@@ -1,41 +1,35 @@
 package com.pig4cloud.pig.dc.biz.controller;
 import cn.felord.payment.wechat.v3.model.Payer;
-import cn.felord.payment.wechat.v3.model.SceneInfo;
 import cn.felord.payment.wechat.v3.model.Amount;
-import cn.felord.payment.wechat.v3.model.Detail;
-import cn.felord.payment.wechat.v3.model.SettleInfo;
 import cn.felord.payment.wechat.v3.model.*;
-import com.google.common.collect.Lists;
 import cn.felord.payment.wechat.v3.WechatResponseEntity;
 
 import cn.felord.payment.wechat.v3.WechatApiProvider;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pig4cloud.pig.common.core.util.R;
-import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
 import com.pig4cloud.pig.dc.api.dto.WechatMiniPayDTO;
-import com.pig4cloud.pig.dc.api.entity.OscArea;
 import com.pig4cloud.pig.dc.biz.config.Constant;
 import com.pig4cloud.pig.dc.biz.config.WechatConfig;
 import com.pig4cloud.pig.dc.biz.service.IOscAdministrativeDivisionService;
 import com.pig4cloud.pig.dc.biz.service.IOscAreaService;
+import com.pig4cloud.pig.dc.biz.service.IOscOfferService;
+import com.pig4cloud.pig.dc.biz.service.IOscOrderService;
 import com.pig4cloud.pig.dc.biz.utils.RandomGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.util.TextUtils;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.alibaba.nacos.client.identify.IdentifyConstants.TENANT_ID;
-import static org.reflections.Reflections.log;
 
 /**
  * @author LeiChen
@@ -56,6 +50,7 @@ public class MiniOrderController {
 
 	private final WechatApiProvider wechatApiProvider;
 	private final WechatConfig wechatConfig;
+	private final IOscOrderService oscOrderService;
 
 	/**
 	 *  小程序下单(预支付)
@@ -66,28 +61,63 @@ public class MiniOrderController {
 	@PostMapping("/prepay")
 	public R createOrder(@RequestBody @Valid WechatMiniPayDTO dto) {
 
-
-		/////////////////////////////
-
-
-		PayParams params=new PayParams();
+		/*PayParams params=new PayParams();
 		params.setAppid(wechatConfig.getAppId());
 		params.setMchid(wechatConfig.getMchId());
 		params.setDescription("测试");
 		params.setOutTradeNo(RandomGenerator.generateRandomByDate(100000));
 		//params.setTimeExpire("");
-		params.setAttach("test");
-		params.setNotifyUrl("https://rdch.sfwal.com/dc/mini/order/transaction");
+		//params.setAttach("test");
+		params.setNotifyUrl(wechatConfig.getNotifyUrl());
 		//params.setGoodsTag("");
 		Amount amount=new Amount();
 		amount.setTotal(1);
 		amount.setCurrency("CNY");
 		params.setAmount(amount);
 
-		WechatResponseEntity<ObjectNode> mini = wechatApiProvider.directPayApi(Constant.TANANTID).appPay(params);
-		return R.ok(mini);
+		Payer payer=new Payer();
+		payer.setOpenid(dto.getOpenId());
+		params.setPayer(payer);
+
+		WechatResponseEntity<ObjectNode> mini = wechatApiProvider.directPayApi(Constant.TANANTID).jsPay(params);*/
+		return R.ok(oscOrderService.prepay(dto));
 	}
 
+
+	/**
+	 * 微信支付成功回调.
+	 * <p>
+	 * 无需开发者判断，只有扣款成功微信才会回调此接口
+	 *
+
+	 */
+	@ApiIgnore
+	@ApiOperation(value = "订单支付成功的回调", notes = "订单支付成功的回调")
+	@SneakyThrows
+	@PostMapping("/wechat/notify")
+	public Map<String, ?> notify(BufferedReader br,
+								 HttpServletRequest request) {
+		log.info("=================================================================微信回调");
+		Enumeration<?> enum1 = request.getHeaderNames();
+		while (enum1.hasMoreElements()) {
+			String key = (String) enum1.nextElement();
+			String value = request.getHeader(key);
+			log.info(key + "\t" + value);
+		}
+//body部分
+		String inputLine;
+		String str = "";
+		try {
+			while ((inputLine = br.readLine()) != null) {
+				str += inputLine;
+			}
+			br.close();
+		} catch (IOException e) {
+			log.error("IOException: " + e);
+		}
+		log.info("str:" + str);
+		 return null;
+	}
 
 
 	/**
@@ -102,6 +132,8 @@ public class MiniOrderController {
 	 * @param request            the request
 	 * @return the map
 	 */
+	@ApiIgnore
+	@ApiOperation(value = "订单支付成功的回调", notes = "订单支付成功的回调")
 	@SneakyThrows
 	@PostMapping("/transaction")
 	public Map<String, ?> transactionCallback(
@@ -110,6 +142,8 @@ public class MiniOrderController {
 			@RequestHeader("Wechatpay-Timestamp") String wechatpayTimestamp,
 			@RequestHeader("Wechatpay-Nonce") String wechatpayNonce,
 			HttpServletRequest request) {
+		log.info("=================================================================微信回调transactionCallback");
+
 		String body = request.getReader().lines().collect(Collectors.joining());
 		// 对请求头进行验签 以确保是微信服务器的调用
 		ResponseSignVerifyParams params = new ResponseSignVerifyParams();
@@ -120,7 +154,8 @@ public class MiniOrderController {
 		params.setBody(body);
 		return wechatApiProvider.callback(Constant.TANANTID).transactionCallback(params, data -> {
 			//TODO 对回调解析的结果进行消费
-			log.info("对回调解析的结果进行消费");
+			log.info("对回调解析的结果进行消费,{}",data);
+
 		});
 	}
 

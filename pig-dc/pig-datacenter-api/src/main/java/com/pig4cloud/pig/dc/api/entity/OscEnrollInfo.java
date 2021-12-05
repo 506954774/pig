@@ -79,5 +79,20 @@ public class OscEnrollInfo extends Model<OscEnrollInfo> {
     @ApiModelProperty( value = "创建人" , required = true)
     private String createBy;
 
+	@ApiModelProperty( value = "高中名称" , required = true)
+	private String highSchoolName;
+
+	@ApiModelProperty( value = "高中英文分数" , required = true)
+	private String highSchoolEnglishScore;
+
+	@ApiModelProperty( value = "高中考试分数" , required = true)
+	private String highSchoolTotalScore;
+
+	@ApiModelProperty( value = "高中分科情况（必选）0:文科 1:理科 2:无分科" , required = true)
+	private Integer subjectType;
+
+	@ApiModelProperty( value = "联系人" , required = true)
+	private String contact;
+
 
 }

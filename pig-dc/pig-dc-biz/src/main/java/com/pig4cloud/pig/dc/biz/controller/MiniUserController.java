@@ -18,9 +18,10 @@ package com.pig4cloud.pig.dc.biz.controller;
 
 import com.pig4cloud.pig.admin.api.feign.RemoteOpenUserService;
 import com.pig4cloud.pig.common.core.util.R;
-import com.pig4cloud.pig.dc.api.dto.WechatLoginDto2;
+import com.pig4cloud.pig.dc.biz.service.IOscUserInfoService;
 import com.pig4cloud.pig.dc.biz.service.impl.AuthServiceImpl;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,37 +36,41 @@ import springfox.documentation.annotations.ApiIgnore;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
-@Api(value = "UserController", tags = "用户模块")
-public class UserController {
+@RequestMapping("/mini/user")
+@Api(value = "MiniUserController", tags = "小程序-用户模块")
+public class MiniUserController {
 
 	private static final PasswordEncoder ENCODER = new BCryptPasswordEncoder();
 
 
 	private final RemoteOpenUserService remoteOpenUserService;
 	private final AuthServiceImpl authService;
+	private final IOscUserInfoService iOscUserInfoService;
 
-
+	@ApiOperation(value = "小程序登录", notes = "小程序登录")
 	@PostMapping("/auth/mini_login")
-	public R wecahtLogin(@RequestParam String code) {
-
+	public R miniLogin(@RequestParam String code) {
 		return R.ok(authService.miniLogin(code));
 	}
 
 
-
-	@PostMapping("/auth/wechat_login")
-	public R wecahtLogin(
+	@ApiOperation(value = "提交微信绑定的手机号", notes = "提交微信绑定的手机号")
+	@PostMapping("/auth/bind_phone")
+	public R bindPhone(
 					  @RequestParam String code,
 					  @RequestParam(required = false) String iv,
-					  @RequestParam(required = false) String encryptedData,
-	                  @RequestBody WechatLoginDto2 dto
+					  @RequestParam(required = false) String encryptedData
 	) {
 
-		return R.ok(authService.wecahtLogin(code,iv,encryptedData,dto));
+		return R.ok(authService.bindPhone(code,iv,encryptedData ));
 	}
 
 
+	@ApiOperation(value = "根据用户id查询个人信息", notes = "根据用户id查询个人信息")
+	@GetMapping("/info/{id}}")
+	public R details(@PathVariable Integer id) {
+		return R.ok(iOscUserInfoService.details(id));
+	}
 
 
 	@ApiIgnore

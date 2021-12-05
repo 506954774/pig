@@ -20,6 +20,7 @@ import java.util.Date;
 import cn.binarywang.wx.miniapp.api.WxMaUserService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
+import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteOpenUserService;
@@ -186,7 +187,14 @@ public class AuthServiceImpl {
 			if(dto!=null){
 				bean.setNickname(dto.getNickName());
 				bean.setAvatar(dto.getAvatar());
-				iOscUserInfoService.getBaseMapper().updateById(bean);
+
+				OscUserInfo oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(data.getUserId());
+				if(oscUserInfo==null){
+					iOscUserInfoService.getBaseMapper().insert(bean);
+				}
+				else{
+					iOscUserInfoService.getBaseMapper().updateById(bean);
+				}
 			}
 
 		}
@@ -428,4 +436,155 @@ public class AuthServiceImpl {
 		return login(username,password);
 	}
 
+	public OAuth2AccessToken miniLogin(String code) {
+
+		if(TextUtils.isEmpty(code) ){
+			throw new BizException("参数不合法!");
+		}
+
+		WxMaJscode2SessionResult result = null;
+		try {
+			result = myWxService.getUserService().getSessionInfo(code);
+			log.info("myWxService.getUserService().getSessionInfo(code).."+result);
+		} catch (WxErrorException e) {
+			log.error("获取openid失败",e);
+			throw new BizException("获取openid失败!");
+		}
+
+		String username=null;
+		String password=Constant.PASSWORD;
+
+		//openid作为用户名
+		username=result.getOpenid();
+
+		R<SysUser> admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
+
+		//新增
+		if(admin.getData()==null){
+			UserDTO user=new UserDTO();
+			user.setUsername(username);
+
+			List<Integer> roles=new ArrayList<>();
+
+			//这个角色id,注意数据库配置,否则upms会报错
+			roles.add(5);
+			user.setRole(roles);
+			user.setDeptId(1);
+
+			user.setPassword(password);
+
+			remoteOpenUserService.user(user,SecurityConstants.FROM_IN);
+		}
+		//已有用户登录
+		else{
+			username=admin.getData().getUsername();
+		}
+		log.info("调用登录接口,用户名:{},密码:{}",username,password);
+
+		return login(username,password);
+	}
+
+	public boolean bindPhone(String code, String iv, String encryptedData) {
+
+
+		if(TextUtils.isEmpty(code)||TextUtils.isEmpty(iv)||TextUtils.isEmpty(encryptedData)){
+			throw new BizException("参数不合法!");
+		}
+
+
+		try {
+			iv = URLEncoder.encode(iv,"UTF-8").replace("%3D","=").replace("%2F","/");
+			encryptedData = URLEncoder.encode(encryptedData,"UTF-8").replace("%3D","=").replace("%2F","/");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			throw new BizException("参数不合法!");
+		}
+
+		WxMaJscode2SessionResult result = null;
+		try {
+			result = myWxService.getUserService().getSessionInfo(code);
+			log.info("myWxService.getUserService().getSessionInfo(code).."+result);
+		} catch (WxErrorException e) {
+			e.printStackTrace();
+		}
+
+		log.info("myWxService:"+myWxService);
+
+		WxMaUserService userService = myWxService.getUserService();
+		log.info("myWxService.getUserService():"+userService);
+		WxMaPhoneNumberInfo phoneNumberInfo = userService.getPhoneNoInfo(result.getSessionKey(), encryptedData, iv);
+		log.info("调用微信接口,解密获取电话号码:"+phoneNumberInfo);
+
+
+		if (phoneNumberInfo==null|| TextUtils.isEmpty(phoneNumberInfo.getPhoneNumber())) {
+			throw new RuntimeException("参数不合法,解密失败!");
+		}
+
+
+		WxMaUserInfo userInfo = userService.getUserInfo(result.getSessionKey(), encryptedData, iv);
+		log.info("调用微信接口,解密获取用户信息:"+userInfo);
+
+
+
+		String username=null;
+		String password=Constant.PASSWORD;
+
+		username=result.getOpenid();
+
+		R<SysUser> admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
+
+		//新增
+		if(admin.getData()==null){
+			UserDTO user=new UserDTO();
+			user.setUsername(username);
+
+			List<Integer> roles=new ArrayList<>();
+
+			//这个角色id,注意数据库配置,否则upms会报错
+			roles.add(5);
+			user.setRole(roles);
+			user.setDeptId(1);
+
+			//选填部分的数据
+			user.setPhone(phoneNumberInfo.getPhoneNumber());
+			user.setPassword(password);
+
+			//upms新增用户
+			remoteOpenUserService.user(user,SecurityConstants.FROM_IN);
+
+			//立马查出用户id
+			admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
+
+			//更新数据库
+			OscUserInfo bean=new OscUserInfo();
+			bean.setUserId(admin.getData().getUserId());
+			bean.setPhone(phoneNumberInfo.getPhoneNumber());
+			bean.setNickname(userInfo.getNickName());
+			bean.setAvatar(userInfo.getAvatarUrl());
+			iOscUserInfoService.getBaseMapper().insert(bean);
+
+		}
+		//已有用户
+		else{
+			SysUser data = admin.getData();
+
+			//更新数据库
+			OscUserInfo bean=new OscUserInfo();
+			bean.setUserId(data.getUserId());
+			bean.setPhone(phoneNumberInfo.getPhoneNumber());
+			bean.setNickname(userInfo.getNickName());
+			bean.setAvatar(userInfo.getAvatarUrl());
+
+			OscUserInfo oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(data.getUserId());
+			if(oscUserInfo==null){
+				iOscUserInfoService.getBaseMapper().insert(bean);
+			}
+			else{
+				iOscUserInfoService.getBaseMapper().updateById(bean);
+			}
+			log.info("更新用户信息成功:{}",bean);
+		}
+
+		return true;
+	}
 }
