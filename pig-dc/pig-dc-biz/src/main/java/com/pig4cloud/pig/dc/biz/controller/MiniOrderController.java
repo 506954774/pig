@@ -1,15 +1,20 @@
 package com.pig4cloud.pig.dc.biz.controller;
+import cn.felord.payment.wechat.enumeration.TradeState;
 import cn.felord.payment.wechat.v3.model.Payer;
 import cn.felord.payment.wechat.v3.model.Amount;
 import cn.felord.payment.wechat.v3.model.*;
 import cn.felord.payment.wechat.v3.WechatResponseEntity;
 
 import cn.felord.payment.wechat.v3.WechatApiProvider;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.dc.api.dto.WechatMiniPayDTO;
+import com.pig4cloud.pig.dc.api.entity.OscOrder;
 import com.pig4cloud.pig.dc.biz.config.Constant;
 import com.pig4cloud.pig.dc.biz.config.WechatConfig;
+import com.pig4cloud.pig.dc.biz.enums.OrderStatusEnum;
 import com.pig4cloud.pig.dc.biz.service.IOscAdministrativeDivisionService;
 import com.pig4cloud.pig.dc.biz.service.IOscAreaService;
 import com.pig4cloud.pig.dc.biz.service.IOscOfferService;
@@ -27,7 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -60,27 +67,18 @@ public class MiniOrderController {
 	@ApiOperation(value = "小程序下单(预支付)", notes = "小程序下单(预支付)")
 	@PostMapping("/prepay")
 	public R createOrder(@RequestBody @Valid WechatMiniPayDTO dto) {
-
-		/*PayParams params=new PayParams();
-		params.setAppid(wechatConfig.getAppId());
-		params.setMchid(wechatConfig.getMchId());
-		params.setDescription("测试");
-		params.setOutTradeNo(RandomGenerator.generateRandomByDate(100000));
-		//params.setTimeExpire("");
-		//params.setAttach("test");
-		params.setNotifyUrl(wechatConfig.getNotifyUrl());
-		//params.setGoodsTag("");
-		Amount amount=new Amount();
-		amount.setTotal(1);
-		amount.setCurrency("CNY");
-		params.setAmount(amount);
-
-		Payer payer=new Payer();
-		payer.setOpenid(dto.getOpenId());
-		params.setPayer(payer);
-
-		WechatResponseEntity<ObjectNode> mini = wechatApiProvider.directPayApi(Constant.TANANTID).jsPay(params);*/
 		return R.ok(oscOrderService.prepay(dto));
+	}
+
+	/**
+	 *  根据预支付id,查询支付结果
+	 *
+	 * @return
+	 */
+	@ApiOperation(value = "根据预支付id,查询支付结果", notes = "根据预支付id,查询支付结果")
+	@GetMapping("/query_pay_result/{prepay_id}")
+	public R queryPayResult(@PathVariable String prepay_id) {
+		return R.ok(oscOrderService.queryPayResult(prepay_id));
 	}
 
 
@@ -94,7 +92,7 @@ public class MiniOrderController {
 	@ApiIgnore
 	@ApiOperation(value = "订单支付成功的回调", notes = "订单支付成功的回调")
 	@SneakyThrows
-	@PostMapping("/wechat/notify")
+	@PostMapping("/transaction")
 	public Map<String, ?> notify(BufferedReader br,
 								 HttpServletRequest request) {
 		log.info("=================================================================微信回调");
@@ -135,7 +133,8 @@ public class MiniOrderController {
 	@ApiIgnore
 	@ApiOperation(value = "订单支付成功的回调", notes = "订单支付成功的回调")
 	@SneakyThrows
-	@PostMapping("/transaction")
+	@PostMapping("/wechat/notify")
+
 	public Map<String, ?> transactionCallback(
 			@RequestHeader("Wechatpay-Serial") String wechatpaySerial,
 			@RequestHeader("Wechatpay-Signature") String wechatpaySignature,
@@ -155,6 +154,24 @@ public class MiniOrderController {
 		return wechatApiProvider.callback(Constant.TANANTID).transactionCallback(params, data -> {
 			//TODO 对回调解析的结果进行消费
 			log.info("对回调解析的结果进行消费,{}",data);
+
+			if(data.getTradeState().equals(TradeState.SUCCESS)){
+				log.info("支付成功,data.getTradeState():{}",data.getTradeState());
+
+				//获取订单编号
+				String outTradeNo = data.getOutTradeNo();
+
+				List<OscOrder> oscOrders = oscOrderService.getBaseMapper().selectList(Wrappers.<OscOrder>query().lambda().eq(OscOrder::getOrderNum, outTradeNo));
+
+				if(CollectionUtils.isNotEmpty(oscOrders)){
+					OscOrder oscOrder=oscOrders.get(0);
+					oscOrder.setOrderStatus(OrderStatusEnum.PAID.getTypeCode());
+					oscOrder.setPayTime(new Date());
+					oscOrderService.getBaseMapper().updateById(oscOrder);
+					log.info("更新订单支付状态成功:{}",oscOrder.getId());
+				}
+
+			}
 
 		});
 	}

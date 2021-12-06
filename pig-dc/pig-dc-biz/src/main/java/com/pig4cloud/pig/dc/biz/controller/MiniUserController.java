@@ -18,6 +18,8 @@ package com.pig4cloud.pig.dc.biz.controller;
 
 import com.pig4cloud.pig.admin.api.feign.RemoteOpenUserService;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.dc.api.dto.QueryUniversityPageDTO;
+import com.pig4cloud.pig.dc.api.entity.OscUserInfo;
 import com.pig4cloud.pig.dc.biz.service.IOscUserInfoService;
 import com.pig4cloud.pig.dc.biz.service.impl.AuthServiceImpl;
 import io.swagger.annotations.Api;
@@ -28,6 +30,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
 
 /**
  * @author lengleng
@@ -67,9 +71,16 @@ public class MiniUserController {
 
 
 	@ApiOperation(value = "根据用户id查询个人信息", notes = "根据用户id查询个人信息")
-	@GetMapping("/info/{id}}")
+	@GetMapping("/info/{id}")
 	public R details(@PathVariable Integer id) {
 		return R.ok(iOscUserInfoService.details(id));
+	}
+
+
+	@ApiOperation(value = "更新用户信息", notes = "更新用户信息")
+	@PostMapping("/update")
+	public R update(@RequestBody @Valid OscUserInfo dto) {
+		return R.ok(iOscUserInfoService.getBaseMapper().updateById(dto));
 	}
 
 

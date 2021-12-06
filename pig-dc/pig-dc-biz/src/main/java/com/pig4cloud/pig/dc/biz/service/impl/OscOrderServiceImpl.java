@@ -128,6 +128,7 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 		//params.setTimeExpire("");
 		//params.setAttach("test");
 		params.setNotifyUrl(wechatConfig.getNotifyUrl());
+		log.info("jspay,支付回调地址:"+wechatConfig.getNotifyUrl());
 		//params.setGoodsTag("");
 		Amount amount=new Amount();
 		BigDecimal price= Constant.TIMES.multiply(order.getOrderAmount());
@@ -142,6 +143,18 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 		WechatResponseEntity<ObjectNode> mini = wechatApiProvider.directPayApi(Constant.TANANTID).jsPay(params);
 
 		return mini;
+	}
+
+	@Override
+	public Integer queryPayResult(String prepayId) {
+		List<OscOrder> oscOrders =  getBaseMapper().selectList(Wrappers.<OscOrder>query().lambda().eq(OscOrder::getPrepayId, prepayId));
+		if(CollectionUtils.isNotEmpty(oscOrders)){
+			OscOrder oscOrder=oscOrders.get(0);
+			if(oscOrder.getOrderStatus().equals(OrderStatusEnum.PAID.getTypeCode())){
+				return OrderStatusEnum.PAID.getTypeCode();
+			}
+		}
+		return OrderStatusEnum.PREPAY.getTypeCode();
 	}
 
 	/***

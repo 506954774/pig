@@ -501,8 +501,8 @@ public class AuthServiceImpl {
 		return login(username,password);
 	}
 
-	public boolean bindPhone(String code, String iv, String encryptedData) {
-
+	public OscUserInfo bindPhone(String code, String iv, String encryptedData) {
+		OscUserInfo oscUserInfo=null;
 
 		if(TextUtils.isEmpty(code)||TextUtils.isEmpty(iv)||TextUtils.isEmpty(encryptedData)){
 			throw new BizException("参数不合法!");
@@ -579,7 +579,7 @@ public class AuthServiceImpl {
 			bean.setNickname(userInfo.getNickName());
 			bean.setAvatar(userInfo.getAvatarUrl());
 
-			OscUserInfo oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(admin.getData().getUserId());
+			oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(admin.getData().getUserId());
 			if(oscUserInfo==null){
 				iOscUserInfoService.getBaseMapper().insert(bean);
 			}
@@ -599,7 +599,7 @@ public class AuthServiceImpl {
 			bean.setNickname(userInfo.getNickName());
 			bean.setAvatar(userInfo.getAvatarUrl());
 
-			OscUserInfo oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(data.getUserId());
+			oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(data.getUserId());
 			if(oscUserInfo==null){
 				iOscUserInfoService.getBaseMapper().insert(bean);
 			}
@@ -609,6 +609,6 @@ public class AuthServiceImpl {
 			log.info("更新用户信息成功:{}",bean);
 		}
 
-		return true;
+		return iOscUserInfoService.getBaseMapper().selectById( admin.getData().getUserId());
 	}
 }

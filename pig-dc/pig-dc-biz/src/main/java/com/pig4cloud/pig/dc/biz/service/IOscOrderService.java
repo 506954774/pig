@@ -38,4 +38,15 @@ public interface IOscOrderService extends IService<OscOrder> {
 	 *
 	 * */
 	WechatResponseEntity<ObjectNode> wechatPrepay(OscOrder order );
+
+	/**
+	 * @Name:
+	 * @Description: 查询订单支付状态
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/6 17:06
+	 *
+	 * */
+	Integer queryPayResult(String prepayId);
 }
