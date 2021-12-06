@@ -19,6 +19,7 @@ package com.pig4cloud.pig.dc.biz.controller;
 import com.pig4cloud.pig.admin.api.feign.RemoteOpenUserService;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.dc.api.dto.QueryUniversityPageDTO;
+import com.pig4cloud.pig.dc.api.dto.WechatLoginDto2;
 import com.pig4cloud.pig.dc.api.entity.OscUserInfo;
 import com.pig4cloud.pig.dc.biz.service.IOscUserInfoService;
 import com.pig4cloud.pig.dc.biz.service.impl.AuthServiceImpl;
@@ -53,8 +54,8 @@ public class MiniUserController {
 
 	@ApiOperation(value = "小程序登录", notes = "小程序登录")
 	@PostMapping("/auth/mini_login")
-	public R miniLogin(@RequestParam String code) {
-		return R.ok(authService.miniLogin(code));
+	public R miniLogin(@RequestParam String code, @RequestBody WechatLoginDto2 dto) {
+		return R.ok(authService.miniLogin(code,  dto));
 	}
 
 
@@ -80,6 +81,7 @@ public class MiniUserController {
 	@ApiOperation(value = "更新用户信息", notes = "更新用户信息")
 	@PostMapping("/update")
 	public R update(@RequestBody @Valid OscUserInfo dto) {
+		log.info("================更新用户信息,{}",dto);
 		return R.ok(iOscUserInfoService.getBaseMapper().updateById(dto));
 	}
 

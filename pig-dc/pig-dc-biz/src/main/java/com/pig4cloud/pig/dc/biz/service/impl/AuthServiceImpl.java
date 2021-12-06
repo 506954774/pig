@@ -437,7 +437,7 @@ public class AuthServiceImpl {
 		return login(username,password);
 	}
 
-	public OAuth2AccessToken miniLogin(String code) {
+	public OAuth2AccessToken miniLogin(String code,WechatLoginDto2 dto) {
 
 		if(TextUtils.isEmpty(code) ){
 			throw new BizException("参数不合法!");
@@ -491,9 +491,14 @@ public class AuthServiceImpl {
 		OscUserInfo bean=new OscUserInfo();
 		bean.setUserId(admin.getData().getUserId());
 		bean.setOpenid(admin.getData().getUsername());
+		bean.setNickname(dto.getNickName());
+		bean.setAvatar(dto.getAvatar());
 		OscUserInfo oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(admin.getData().getUserId());
 		if(oscUserInfo==null){
 			iOscUserInfoService.getBaseMapper().insert(bean);
+		}
+		else {
+			iOscUserInfoService.getBaseMapper().updateById(bean);
 		}
 
 		log.info("调用登录接口,用户名:{},密码:{}",username,password);

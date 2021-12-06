@@ -65,4 +65,7 @@ public class OscUserInfo extends Model<OscUserInfo> {
 	@ApiModelProperty( value = "用户的微信号码" , required = true)
 	private String userWechatAccount;
 
+	@ApiModelProperty( value = "成为会员的时间" , required = true)
+	private Date memberPayTime;
+
 }

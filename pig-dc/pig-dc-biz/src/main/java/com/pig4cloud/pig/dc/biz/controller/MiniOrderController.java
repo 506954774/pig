@@ -6,25 +6,29 @@ import cn.felord.payment.wechat.v3.model.*;
 import cn.felord.payment.wechat.v3.WechatResponseEntity;
 
 import cn.felord.payment.wechat.v3.WechatApiProvider;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pig4cloud.pig.common.core.util.R;
-import com.pig4cloud.pig.dc.api.dto.WechatMiniPayDTO;
+import com.pig4cloud.pig.dc.api.dto.*;
 import com.pig4cloud.pig.dc.api.entity.OscOrder;
+import com.pig4cloud.pig.dc.api.entity.OscUserInfo;
+import com.pig4cloud.pig.dc.api.vo.OrderCountVo;
+import com.pig4cloud.pig.dc.api.vo.OrderVo;
 import com.pig4cloud.pig.dc.biz.config.Constant;
 import com.pig4cloud.pig.dc.biz.config.WechatConfig;
 import com.pig4cloud.pig.dc.biz.enums.OrderStatusEnum;
-import com.pig4cloud.pig.dc.biz.service.IOscAdministrativeDivisionService;
-import com.pig4cloud.pig.dc.biz.service.IOscAreaService;
-import com.pig4cloud.pig.dc.biz.service.IOscOfferService;
-import com.pig4cloud.pig.dc.biz.service.IOscOrderService;
+import com.pig4cloud.pig.dc.biz.enums.OrderTypeEnum;
+import com.pig4cloud.pig.dc.biz.service.*;
 import com.pig4cloud.pig.dc.biz.utils.RandomGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -58,6 +62,7 @@ public class MiniOrderController {
 	private final WechatApiProvider wechatApiProvider;
 	private final WechatConfig wechatConfig;
 	private final IOscOrderService oscOrderService;
+	private final IOscUserInfoService oscUserInfoService;
 
 	/**
 	 *  小程序下单(预支付)
@@ -83,14 +88,14 @@ public class MiniOrderController {
 
 
 	/**
-	 * 微信支付成功回调.
+	 * 测试微信支付成功回调.
 	 * <p>
 	 * 无需开发者判断，只有扣款成功微信才会回调此接口
 	 *
 
 	 */
 	@ApiIgnore
-	@ApiOperation(value = "订单支付成功的回调", notes = "订单支付成功的回调")
+	@ApiOperation(value = "测试微信支付成功回调", notes = "测试微信支付成功回调测试微信支付成功回调")
 	@SneakyThrows
 	@PostMapping("/transaction")
 	public Map<String, ?> notify(BufferedReader br,
@@ -120,6 +125,10 @@ public class MiniOrderController {
 
 	/**
 	 * 微信支付成功回调.
+	 * 这个地址是配置在yml里的.由域名和notifyUrl拼接而成
+	 * notifyUrl只写域名后面的就行
+	 *  domain: https://rdch.sfwal.com
+	 *  notifyUrl: /dc/mini/order/wechat/notify
 	 * <p>
 	 * 无需开发者判断，只有扣款成功微信才会回调此接口
 	 *
@@ -133,6 +142,7 @@ public class MiniOrderController {
 	@ApiIgnore
 	@ApiOperation(value = "订单支付成功的回调", notes = "订单支付成功的回调")
 	@SneakyThrows
+	@Transactional(rollbackFor = Exception.class)
 	@PostMapping("/wechat/notify")
 
 	public Map<String, ?> transactionCallback(
@@ -158,6 +168,7 @@ public class MiniOrderController {
 			if(data.getTradeState().equals(TradeState.SUCCESS)){
 				log.info("支付成功,data.getTradeState():{}",data.getTradeState());
 
+				Date now =new Date();
 				//获取订单编号
 				String outTradeNo = data.getOutTradeNo();
 
@@ -165,8 +176,23 @@ public class MiniOrderController {
 
 				if(CollectionUtils.isNotEmpty(oscOrders)){
 					OscOrder oscOrder=oscOrders.get(0);
+					//买会员
+					if(oscOrder.getOrderType().equals(OrderTypeEnum.MEMBER.getTypeCode())){
+						//会员状态修改
+						OscUserInfo oscUserInfo = oscUserInfoService.getBaseMapper().selectById(oscOrder.getUserId());
+						if(oscUserInfo!=null){
+							oscUserInfo.setMemberFlag(Constant.MEMBER_FLAG);
+							oscUserInfo.setMemberPayTime(now);
+							oscUserInfoService.getBaseMapper().updateById(oscUserInfo);
+						}
+					}
+					//买产品
+					else{
+
+					}
 					oscOrder.setOrderStatus(OrderStatusEnum.PAID.getTypeCode());
-					oscOrder.setPayTime(new Date());
+					oscOrder.setPayTime(now);
+					oscOrder.setThirdPartyId(data.getTransactionId());
 					oscOrderService.getBaseMapper().updateById(oscOrder);
 					log.info("更新订单支付状态成功:{}",oscOrder.getId());
 				}
@@ -178,6 +204,28 @@ public class MiniOrderController {
 
 
 
+	/**
+	 *  根据uid查询订单数量统计
+	 *
+	 * @return
+	 */
+	@ApiOperation(value = " 根据uid查询订单数量统计", notes = " 根据uid查询订单数量统计" ,response = OrderCountVo.class)
+	@PostMapping("/stastics")
+	public R stastics(@RequestBody @Valid QueryUserOrderStasticsDTO dto) {
+		return R.ok(oscOrderService.queryOrderStastics(BeanUtil.copyProperties(dto,QueryOrderPageDTO.class)));
+	}
+
+
+	/**
+	 *  根据uid查询订单分页列表
+	 *
+	 * @return
+	 */
+	@ApiOperation(value = " 根据uid查询订单分页列表", notes = " 根据uid查询订单分页列表",response = OrderVo.class)
+	@PostMapping("/page")
+	public R page(@RequestBody @Valid QueryUserOrderPageDTO dto) {
+		return R.ok(oscOrderService.queryOrderPage(BeanUtil.copyProperties(dto,QueryOrderPageDTO.class)));
+	}
 
 
 }

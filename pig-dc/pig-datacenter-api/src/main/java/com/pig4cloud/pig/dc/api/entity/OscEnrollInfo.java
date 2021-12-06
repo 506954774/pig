@@ -95,4 +95,17 @@ public class OscEnrollInfo extends Model<OscEnrollInfo> {
 	private String contact;
 
 
+	@ApiModelProperty( value = "申请的课程（二选一） 0:本科 1:研究生" , required = true)
+	private String applyType;
+
+	@ApiModelProperty( value = "本科就读院校 （必填）" , required = true)
+	private String universityName;
+
+	@ApiModelProperty( value = "所在的年级 （必选）" , required = true)
+	private String universityGrade;
+
+	@ApiModelProperty( value = "想读的课程？（必选） 0:授课型 1:研究型 2:博士 3:暂无" , required = true)
+	private String universitySubjectIntent;
+
+
 }

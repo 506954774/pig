@@ -92,6 +92,9 @@ public class OscOrder extends Model<OscOrder> {
     @ApiModelProperty( value = "修改时间" , required = true)
     private Date updateTime;
 
+	@ApiModelProperty( value = "用户备注" , required = true)
+	private String userRemark;
+
     @ApiModelProperty( value = "创建人" , required = true)
     private String createBy;
 

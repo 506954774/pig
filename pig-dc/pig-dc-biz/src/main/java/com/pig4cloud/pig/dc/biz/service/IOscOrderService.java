@@ -1,11 +1,17 @@
 package com.pig4cloud.pig.dc.biz.service;
 
 import cn.felord.payment.wechat.v3.WechatResponseEntity;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.dc.api.dto.QueryOrderPageDTO;
 import com.pig4cloud.pig.dc.api.dto.WechatMiniPayDTO;
 import com.pig4cloud.pig.dc.api.entity.OscOrder;
+import com.pig4cloud.pig.dc.api.vo.OrderCountVo;
+import com.pig4cloud.pig.dc.api.vo.OrderVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -49,4 +55,27 @@ public interface IOscOrderService extends IService<OscOrder> {
 	 *
 	 * */
 	Integer queryPayResult(String prepayId);
+
+
+	/**
+	 * @Name:
+	 * @Description: 查询订单数量统计
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/6 22:25
+	 *
+	 * */
+	List<OrderCountVo> queryOrderStastics(QueryOrderPageDTO dto);
+
+	/**
+	 * @Name:
+	 * @Description: 查询订单分页列表
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/6 22:32
+	 *
+	 * */
+	Page<OrderVo> queryOrderPage(QueryOrderPageDTO dto);
 }

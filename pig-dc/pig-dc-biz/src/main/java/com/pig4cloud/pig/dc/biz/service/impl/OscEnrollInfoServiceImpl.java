@@ -47,7 +47,7 @@ public class OscEnrollInfoServiceImpl extends ServiceImpl<OscEnrollInfoMapper, O
 			throw new BizException("专业不存在或者已被删除");
 		}
 		OscEnrollInfo entity= BeanUtil.copyProperties(dto,OscEnrollInfo.class);
-		entity.setUserTel(oscUserInfo.getPhone());
+		//entity.setUserTel(oscUserInfo.getPhone());
 		entity.setCreateTime(new Date());
 		getBaseMapper().insert(entity);
 		return entity.getId();

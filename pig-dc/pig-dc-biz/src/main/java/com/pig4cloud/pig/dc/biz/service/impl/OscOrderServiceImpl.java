@@ -11,12 +11,14 @@ import cn.felord.payment.wechat.v3.model.Payer;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.pig4cloud.pig.dc.api.dto.PrepayOrderDTO;
-import com.pig4cloud.pig.dc.api.dto.WechatMiniPayDTO;
-import com.pig4cloud.pig.dc.api.dto.WechatMiniPayGoodsDTO;
+import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.dc.api.dto.*;
 import com.pig4cloud.pig.dc.api.entity.*;
+import com.pig4cloud.pig.dc.api.vo.OrderCountVo;
+import com.pig4cloud.pig.dc.api.vo.OrderVo;
 import com.pig4cloud.pig.dc.biz.config.Constant;
 import com.pig4cloud.pig.dc.biz.config.WechatConfig;
 import com.pig4cloud.pig.dc.biz.enums.OrderStatusEnum;
@@ -93,6 +95,7 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 			order.setPrepayId(objectNodeWechatResponseEntity.getBody().get(Constant.PREPAY_ID).asText());
 
 			//订单入库
+			order.setUserRemark(payDTO.getUserRemark());
 			getBaseMapper().insert(order);
 			//订单详情入库
 			if(payDTO.getType().equals(OrderTypeEnum.PRODUCT.getTypeCode())){
@@ -155,6 +158,42 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 			}
 		}
 		return OrderStatusEnum.PREPAY.getTypeCode();
+	}
+
+	@Override
+	public List<OrderCountVo> queryOrderStastics(QueryOrderPageDTO dto) {
+		List<OrderCountVo> result=new ArrayList<>();
+		for (int i = 0; i < 5; i++) {
+			OrderCountVo bean=new OrderCountVo();
+			bean.setOrderStatus(i+1);
+			bean.setOrderCount(0);
+			result.add(bean);
+		}
+		List<OrderCountVo> orderCountVos = getBaseMapper().selectOrdersCount(dto);
+		//log.info("统计结果,{}",orderCountVos);
+		if(CollectionUtils.isNotEmpty(orderCountVos)){
+			var maps=orderCountVos.stream().collect(Collectors.toMap(bean->bean.getOrderStatus().toString(),bean->bean.getOrderCount()));
+			//log.info("统计结果,maps{}",maps);
+			for (int i = 0; i < result.size(); i++) {
+				Integer count= maps.get(result.get(i).getOrderStatus().toString());
+				if(count!=null){
+					result.get(i).setOrderCount(count);
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public Page<OrderVo> queryOrderPage(QueryOrderPageDTO dto) {
+		if(dto==null){
+			dto=new QueryOrderPageDTO();
+		}
+		Page page=new Page();
+		page.setCurrent(dto.getCurrent());
+		page.setSize(dto.getSize());
+		Page page1 = getBaseMapper().selectOrders(page, dto);
+		return page1;
 	}
 
 	/***

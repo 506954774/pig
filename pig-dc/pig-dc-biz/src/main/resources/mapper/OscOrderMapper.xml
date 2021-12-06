@@ -23,4 +23,107 @@
         <result column="update_time" property="updateTime" />
         <result column="create_by" property="createBy" />
     </resultMap>
+
+
+
+	<resultMap type="com.pig4cloud.pig.dc.api.vo.OrderVo" id="orderMap">
+		<result property="id" column="id"/>
+		<result property="orderStatus" column="order_status"/>
+		<result property="orderNum" column="order_num"/>
+		<result property="thirdPartyId" column="third_party_id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="cancelTime" column="cancel_time"/>
+		<result property="payTime" column="pay_time"/>
+		<result property="writeOffTime" column="write_off_time"/>
+		<result property="userId" column="user_id"/>
+		<result property="orderAmount" column="order_amount"/>
+		<result property="realname" column="realname"/>
+		<result property="phone" column="phone"/>
+
+
+		<collection property="products"  column="id"  ofType="com.pig4cloud.pig.dc.api.vo.OrderProductVo">
+			<result column="product_name" property="productName" />
+			<result column="product_single_price" property="productSinglePrice" />
+			<result column="product_quantity" property="productQuantity" />
+			<result column="product_total_price" property="productTotalPrice" />
+
+		</collection>
+	</resultMap>
+
+	<sql id="where_case" >
+	<if test="param.userId !=null   ">
+		and   oo.user_id=  #{param.userId}
+	</if>
+	<if test="param.orderStatus !=null   ">
+		and   oo.order_status=  #{param.orderStatus}
+	</if>
+	<if test="param.createTimeStart !=null    ">
+		and   oo.create_time &gt;=  #{param.createTimeStart}
+	</if>
+	<if test="param.createTimeEnd !=null    ">
+		and   oo.create_time &lt;=  #{param.createTimeEnd}
+	</if>
+
+
+	<if test="param.keyword!=null and param.keyword!='' ">
+		and   (
+		oui.realname like concat('%', #{param.keyword},'%')
+
+		or oui.phone like concat('%', #{param.keyword},'%')
+
+		or oo.third_party_id like concat('%', #{param.keyword},'%')
+
+		or oop.product_name like concat('%', #{param.keyword},'%')
+
+		)
+	</if>
+	</sql>
+
+	<select id="selectOrders" resultMap="orderMap" >
+
+		SELECT
+			oo.id ,
+			oo.order_status,
+			oo.order_num ,
+			oo.third_party_id ,
+			oo.create_time ,
+			oo.cancel_time ,
+			oo.pay_time ,
+			oo.write_off_time ,
+			oo.user_id ,
+			oo.order_amount ,
+
+			oui.realname ,
+			oui.phone ,
+
+			oop.product_name,
+			oop.product_single_price,
+			oop.product_quantity,
+			oop.product_total_price
+		FROM
+			osc_order oo
+				LEFT JOIN osc_order_product oop ON oo.id=oop.order_id
+				LEFT JOIN osc_user_info oui on oo.user_id=oui.user_id
+		WHERE
+			oo.order_type=1 and oo.del_flag=0
+		<include refid="where_case"></include>
+
+
+	</select>
+
+
+	<select id="selectOrdersCount" resultType="com.pig4cloud.pig.dc.api.vo.OrderCountVo" >
+		SELECT
+			oo.order_status orderStatus,
+			COUNT(1) orderCount
+		FROM
+		osc_order oo
+		LEFT JOIN osc_order_product oop ON oo.id=oop.order_id
+		LEFT JOIN osc_user_info oui on oo.user_id=oui.user_id
+		WHERE
+		oo.order_type=1 and oo.del_flag=0
+		<include refid="where_case"></include>
+		GROUP BY oo.order_status
+
+	</select>
 </mapper>

@@ -30,4 +30,5 @@ public class Constant {
 	public static final String SEPCTOR = ",";
 	//没有支付则自动设置为已取消
 	public static final Long DELAY_TIME = 5*60*1000L;
+	public static final String MEMBER_FLAG = "1";
 }

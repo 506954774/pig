@@ -50,7 +50,7 @@ public class UserController {
 	@PostMapping("/auth/mini_login")
 	public R wecahtLogin(@RequestParam String code) {
 
-		return R.ok(authService.miniLogin(code));
+		return R.ok(authService.miniLogin(code,null));
 	}
 
 
