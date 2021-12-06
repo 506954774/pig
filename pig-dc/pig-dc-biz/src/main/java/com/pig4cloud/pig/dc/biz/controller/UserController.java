@@ -37,6 +37,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 @Api(value = "UserController", tags = "用户模块")
+@Deprecated
 public class UserController {
 
 	private static final PasswordEncoder ENCODER = new BCryptPasswordEncoder();

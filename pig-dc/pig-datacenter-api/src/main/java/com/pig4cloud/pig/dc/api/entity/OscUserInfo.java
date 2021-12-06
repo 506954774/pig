@@ -24,7 +24,7 @@ public class OscUserInfo extends Model<OscUserInfo> {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(type= IdType.NONE)
+    @TableId(type= IdType.INPUT)
     @ApiModelProperty( value = "主键ID" , required = true)
     private Integer userId;
 

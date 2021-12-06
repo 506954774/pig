@@ -58,6 +58,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/wechat")
 @Api(value = "wechat", tags = "微信管理模块")
+@Deprecated
 public class WechatUserController {
 
 	private static final PasswordEncoder ENCODER = new BCryptPasswordEncoder();

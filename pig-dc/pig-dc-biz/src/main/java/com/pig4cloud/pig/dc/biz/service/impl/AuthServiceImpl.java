@@ -137,7 +137,8 @@ public class AuthServiceImpl {
 		String username=null;
 		String password=Constant.PASSWORD;
 
-		username=phoneNumberInfo.getPhoneNumber();
+		//username=phoneNumberInfo.getPhoneNumber();
+		username=result.getOpenid();
 
 		R<SysUser> admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
 
@@ -479,6 +480,22 @@ public class AuthServiceImpl {
 		else{
 			username=admin.getData().getUsername();
 		}
+
+		//再查一次
+		if(admin.getData()==null) {
+			admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
+		}
+		log.info("调用用户查询接口,{} ",admin);
+
+		//插入userInfo表
+		OscUserInfo bean=new OscUserInfo();
+		bean.setUserId(admin.getData().getUserId());
+		bean.setOpenid(admin.getData().getUsername());
+		OscUserInfo oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(admin.getData().getUserId());
+		if(oscUserInfo==null){
+			iOscUserInfoService.getBaseMapper().insert(bean);
+		}
+
 		log.info("调用登录接口,用户名:{},密码:{}",username,password);
 
 		return login(username,password);
@@ -561,7 +578,14 @@ public class AuthServiceImpl {
 			bean.setPhone(phoneNumberInfo.getPhoneNumber());
 			bean.setNickname(userInfo.getNickName());
 			bean.setAvatar(userInfo.getAvatarUrl());
-			iOscUserInfoService.getBaseMapper().insert(bean);
+
+			OscUserInfo oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(admin.getData().getUserId());
+			if(oscUserInfo==null){
+				iOscUserInfoService.getBaseMapper().insert(bean);
+			}
+			else{
+				iOscUserInfoService.getBaseMapper().updateById(bean);
+			}
 
 		}
 		//已有用户
