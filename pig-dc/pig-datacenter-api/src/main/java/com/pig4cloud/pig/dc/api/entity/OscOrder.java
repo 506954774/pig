@@ -98,6 +98,8 @@ public class OscOrder extends Model<OscOrder> {
     @ApiModelProperty( value = "创建人" , required = true)
     private String createBy;
 
+	@ApiModelProperty( value = "核销人" , required = true)
+	private String writeOffBy;
 
 
 }

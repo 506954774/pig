@@ -2,6 +2,7 @@ package com.pig4cloud.pig.dc.biz.controller;
 
 import cn.felord.payment.wechat.v3.WechatApiProvider;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.dc.api.dto.OrderWriteOffDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryOrderPageDTO;
 import com.pig4cloud.pig.dc.api.vo.OrderCountVo;
 import com.pig4cloud.pig.dc.api.vo.OrderVo;
@@ -14,10 +15,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 
@@ -50,6 +49,7 @@ public class OrderController {
 	 *
 	 * @return
 	 */
+	@ApiIgnore
 	@ApiOperation(value = " 查询订单数量统计", notes = " 查询订单数量统计" ,response = OrderCountVo.class)
 	@PostMapping("/stastics")
 	public R stastics(@RequestBody @Valid QueryOrderPageDTO dto) {
@@ -68,5 +68,30 @@ public class OrderController {
 		return R.ok(oscOrderService.queryOrderPage(dto));
 	}
 
+
+
+	/**
+	 * 根据id查询详情
+	 * @param id id
+	 * @return R
+	 */
+	@ApiOperation(value = "根据id查询详情", notes = "根据id查询详情",response = OrderVo.class)
+	@GetMapping("/details/{id}" )
+	public R details(@PathVariable Integer id) {
+		return R.ok(oscOrderService.details(id));
+	}
+
+
+
+	/**
+	 *  订单核销
+	 *
+	 * @return
+	 */
+	@ApiOperation(value = "订单核销", notes = " 订单核销" )
+	@PostMapping("/write_off")
+	public R writeOff(@RequestBody @Valid OrderWriteOffDTO dto) {
+		return R.ok(oscOrderService.writeOff(dto));
+	}
 
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.dc.api.dto.OrderWriteOffDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryOrderPageDTO;
 import com.pig4cloud.pig.dc.api.dto.UserOrderDTO;
 import com.pig4cloud.pig.dc.api.dto.WechatMiniPayDTO;
@@ -102,4 +103,26 @@ public interface IOscOrderService extends IService<OscOrder> {
 	 *
 	 * */
 	WechatPayResponse continue2Pay(UserOrderDTO dto);
+
+	/**
+	 * @Name:
+	 * @Description: 根据id查询详情
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/7 19:31
+	 *
+	 * */
+	OrderVo details(Integer id);
+
+	/**
+	 * @Name:
+	 * @Description: 订单核销
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/7 19:43
+	 *
+	 * */
+	Integer writeOff(OrderWriteOffDTO dto);
 }

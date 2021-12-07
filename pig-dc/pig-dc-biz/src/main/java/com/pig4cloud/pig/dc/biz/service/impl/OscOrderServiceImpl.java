@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.pig.dc.api.dto.*;
 import com.pig4cloud.pig.dc.api.entity.*;
 import com.pig4cloud.pig.dc.api.vo.BodyDTO;
@@ -264,6 +265,27 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 		else{
 			return cache;
 		}*/
+	}
+
+	@Override
+	public OrderVo details(Integer id) {
+		return getBaseMapper().selectOrderById(id);
+	}
+
+	@Override
+	public Integer writeOff(OrderWriteOffDTO dto) {
+		OscOrder oscOrder = getBaseMapper().selectById(dto.getOrderId());
+		if(oscOrder==null){
+			throw new BizException("订单不存在或者已被删除");
+		}
+		if(!oscOrder.getOrderStatus().equals(OrderStatusEnum.PAID.getTypeCode())){
+			throw new BizException("订单当前不是已支付状态,无法核销");
+		}
+		oscOrder.setWriteOffTime(new Date());
+		oscOrder.setWriteOffBy(SecurityUtils.getUser().getId()+"");
+		oscOrder.setOrderStatus(OrderStatusEnum.FINISHED.getTypeCode());
+		getBaseMapper().updateById(oscOrder);
+		return oscOrder.getId();
 	}
 
 	/***

@@ -52,4 +52,14 @@ public interface OscOrderMapper extends BaseMapper<OscOrder> {
 	 * */
 	List<OrderCountVo> selectOrdersCount(@Param("param") QueryOrderPageDTO param);
 
+	/**
+	 * @Name:
+	 * @Description: 根据id查询详情
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/7 19:34
+	 *
+	 * */
+	OrderVo selectOrderById ( @Param("id") Integer id);
 }
