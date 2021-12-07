@@ -1,5 +1,6 @@
 package com.pig4cloud.pig.dc.biz.service.impl;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -8,6 +9,7 @@ import cn.felord.payment.wechat.v3.WechatResponseEntity;
 import cn.felord.payment.wechat.v3.model.Amount;
 import cn.felord.payment.wechat.v3.model.PayParams;
 import cn.felord.payment.wechat.v3.model.Payer;
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -17,10 +19,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.dc.api.dto.*;
 import com.pig4cloud.pig.dc.api.entity.*;
+import com.pig4cloud.pig.dc.api.vo.BodyDTO;
 import com.pig4cloud.pig.dc.api.vo.OrderCountVo;
 import com.pig4cloud.pig.dc.api.vo.OrderVo;
+import com.pig4cloud.pig.dc.api.vo.WechatPayResponse;
 import com.pig4cloud.pig.dc.biz.config.Constant;
 import com.pig4cloud.pig.dc.biz.config.WechatConfig;
+import com.pig4cloud.pig.dc.biz.entity.WechatResponseEntity2;
 import com.pig4cloud.pig.dc.biz.enums.OrderStatusEnum;
 import com.pig4cloud.pig.dc.biz.enums.OrderTypeEnum;
 import com.pig4cloud.pig.dc.biz.exceptions.BizException;
@@ -28,15 +33,19 @@ import com.pig4cloud.pig.dc.biz.mapper.*;
 import com.pig4cloud.pig.dc.biz.rabbitMq.receiver.MessageType;
 import com.pig4cloud.pig.dc.biz.service.IOscOrderService;
 import com.pig4cloud.pig.dc.biz.utils.RandomGenerator;
+import com.pig4cloud.pig.dc.biz.utils.SerializeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
+import org.apache.http.util.TextUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pig4cloud.pig.common.mq.constants.RabbitMqConstants;
 import pig4cloud.pig.common.mq.sender.RabbitMqSender;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +70,8 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 	private final OscProductMapper oscProductMapper;
 	private final OscOrderProductMapper oscOrderProductMapper;
 	private final RabbitMqSender rabbitMqSender;
+	private final RedisTemplate<String, String> redisTemplate;
+
 
 
 	@Transactional(rollbackFor = Exception.class)
@@ -115,6 +126,19 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 			//发送延时消息
 			rabbitMqSender.sendDelayMessage(RabbitMqConstants.EXCHANGE_TEST,
 					RabbitMqConstants.TOPIC_TEST, JSON.toJSONString(message), Constant.DELAY_TIME);
+
+
+			//存入redis.由于非固定格式的,所以单独写一个pojo,专门作为缓存订单数据的对象
+			BodyDTO bodyDTO=new BodyDTO();
+			bodyDTO.setPrepayId(objectNodeWechatResponseEntity.getBody().get(Constant.PREPAY_ID).asText());
+			bodyDTO.setAppId(objectNodeWechatResponseEntity.getBody().get("appId").asText());
+			bodyDTO.setTimeStamp(objectNodeWechatResponseEntity.getBody().get("timeStamp").asText());
+			bodyDTO.setNonceStr(objectNodeWechatResponseEntity.getBody().get("nonceStr").asText());
+			bodyDTO.setPackageX(objectNodeWechatResponseEntity.getBody().get("package").asText());
+			bodyDTO.setSignType(objectNodeWechatResponseEntity.getBody().get("signType").asText());
+			bodyDTO.setPaySign(objectNodeWechatResponseEntity.getBody().get("paySign").asText());
+
+			redisTemplate.opsForValue().set(order.getId().toString(),JSON.toJSONString(bodyDTO),Constant.DELAY_TIME, TimeUnit.MILLISECONDS);
 
 			return objectNodeWechatResponseEntity;
 			//return null;
@@ -194,6 +218,57 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 		page.setSize(dto.getSize());
 		Page page1 = getBaseMapper().selectOrders(page, dto);
 		return page1;
+	}
+
+	@Override
+	public Integer cancelOrder(UserOrderDTO dto) {
+		OscOrder oscOrder = getBaseMapper().selectById(dto.getOrderId());
+		if(oscOrder==null){
+			throw new BizException("订单不存在或者已被删除");
+		}
+		if(!oscOrder.getOrderStatus().equals(OrderStatusEnum.PREPAY.getTypeCode())){
+			throw new BizException("订单当前不是待支付状态,无法取消");
+		}
+		if(!oscOrder.getUserId().equals(dto.getUserId())){
+			throw new BizException("订单不属于当前用户,无法取消");
+		}
+		oscOrder.setCancelTime(new Date());
+		oscOrder.setOrderStatus(OrderStatusEnum.CANCEL.getTypeCode());
+		getBaseMapper().updateById(oscOrder);
+		return oscOrder.getId();
+	}
+
+	@Override
+	public WechatPayResponse continue2Pay(UserOrderDTO dto) {
+		OscOrder oscOrder = getBaseMapper().selectById(dto.getOrderId());
+		if(oscOrder==null){
+			throw new BizException("订单不存在或者已被删除");
+		}
+		if(!oscOrder.getOrderStatus().equals(OrderStatusEnum.PREPAY.getTypeCode())){
+			throw new BizException("订单当前不是待支付状态,无法继续支付");
+		}
+		if(!oscOrder.getUserId().equals(dto.getUserId())){
+			throw new BizException("订单不属于当前用户,无法继续支付");
+		}
+		//从redis里取出缓存
+		String cache = redisTemplate.opsForValue().get(oscOrder.getId().toString());
+		if(TextUtils.isEmpty(cache)){
+			throw new BizException("订单超时未支付,已被取消,无法继续支付");
+		}
+		else{
+			WechatPayResponse responseEntity=new WechatPayResponse();
+			responseEntity.setHttpStatus(200);
+			responseEntity.setBody(JSON.parseObject(cache,BodyDTO.class));
+			return responseEntity;
+		}
+		/*WechatResponseEntity cache = redisTemplate.opsForValue().get(oscOrder.getId().toString());
+		log.info("订单预支付信息,缓存:[]",cache);
+		if(cache==null){
+			throw new BizException("订单超时未支付,已被取消,无法继续支付");
+		}
+		else{
+			return cache;
+		}*/
 	}
 
 	/***

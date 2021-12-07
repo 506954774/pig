@@ -87,6 +87,28 @@ public class MiniOrderController {
 	}
 
 
+
+	/**
+	 *  取消订单(待支付的订单才允许取消)
+	 * @return
+	 */
+	@ApiOperation(value = "取消订单(待支付的订单才允许取消)", notes = "取消订单(待支付的订单才允许取消)")
+	@PostMapping("/cancel")
+	public R cancelOrder(@RequestBody @Valid UserOrderDTO dto) {
+		return R.ok(oscOrderService.cancelOrder(dto));
+	}
+
+
+	/**
+	 *  继续支付订单
+	 * @return
+	 */
+	@ApiOperation(value = "继续支付订单 ", notes = "继续支付订单 ")
+	@PostMapping("/continue_to_pay")
+	public R continue2Pay(@RequestBody @Valid UserOrderDTO dto) {
+		return R.ok(oscOrderService.continue2Pay(dto));
+	}
+
 	/**
 	 * 测试微信支付成功回调.
 	 * <p>

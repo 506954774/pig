@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.dc.api.dto.QueryOrderPageDTO;
+import com.pig4cloud.pig.dc.api.dto.UserOrderDTO;
 import com.pig4cloud.pig.dc.api.dto.WechatMiniPayDTO;
 import com.pig4cloud.pig.dc.api.entity.OscOrder;
 import com.pig4cloud.pig.dc.api.vo.OrderCountVo;
 import com.pig4cloud.pig.dc.api.vo.OrderVo;
+import com.pig4cloud.pig.dc.api.vo.WechatPayResponse;
 
 import java.util.List;
 
@@ -78,4 +80,26 @@ public interface IOscOrderService extends IService<OscOrder> {
 	 *
 	 * */
 	Page<OrderVo> queryOrderPage(QueryOrderPageDTO dto);
+
+	/**
+	 * @Name:
+	 * @Description: 取消订单
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/7 8:57
+	 *
+	 * */
+	Integer cancelOrder(UserOrderDTO dto);
+
+	/**
+	 * @Name:
+	 * @Description: 继续支付订单
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/7 9:07
+	 *
+	 * */
+	WechatPayResponse continue2Pay(UserOrderDTO dto);
 }
