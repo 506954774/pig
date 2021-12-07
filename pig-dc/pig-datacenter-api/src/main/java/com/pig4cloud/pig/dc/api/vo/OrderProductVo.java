@@ -48,6 +48,9 @@ public class OrderProductVo implements Serializable {
 	@ApiModelProperty( value = "产品单价,人民币,元" , required = true)
 	private BigDecimal productSinglePrice;
 
+	@ApiModelProperty( value = "封面图片地址" , required = true)
+	private String imageUrl;
+
 
 
 

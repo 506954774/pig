@@ -42,6 +42,7 @@
 
 
 		<collection property="products"  column="id"  ofType="com.pig4cloud.pig.dc.api.vo.OrderProductVo">
+			<result column="image_url" property="imageUrl" />
 			<result column="product_name" property="productName" />
 			<result column="product_single_price" property="productSinglePrice" />
 			<result column="product_quantity" property="productQuantity" />
@@ -96,6 +97,7 @@
 			oui.realname ,
 			oui.phone ,
 
+		    op.image_url,
 			oop.product_name,
 			oop.product_single_price,
 			oop.product_quantity,
@@ -104,6 +106,7 @@
 			osc_order oo
 				LEFT JOIN osc_order_product oop ON oo.id=oop.order_id
 				LEFT JOIN osc_user_info oui on oo.user_id=oui.user_id
+		        LEFT JOIN osc_product op on oop.product_id=op.id
 		WHERE
 			oo.order_type=1 and oo.del_flag=0
 		<include refid="where_case"></include>
