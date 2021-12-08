@@ -250,4 +250,17 @@ public class MiniOrderController {
 	}
 
 
+	/**
+	 * 根据id查询详情
+	 * @param id id
+	 * @return R
+	 */
+	@ApiOperation(value = "根据id查询详情", notes = "根据id查询详情",response = OrderVo.class)
+	@GetMapping("/details/{id}" )
+	public R details(@PathVariable Integer id) {
+		return R.ok(oscOrderService.details(id));
+	}
+
+
+
 }

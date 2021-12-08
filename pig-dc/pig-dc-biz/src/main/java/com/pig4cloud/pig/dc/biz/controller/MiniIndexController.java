@@ -7,6 +7,7 @@ import com.pig4cloud.pig.dc.api.dto.QueryIndexPageDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
 import com.pig4cloud.pig.dc.api.dto.WebQueryMajorPageDTO;
 import com.pig4cloud.pig.dc.api.entity.*;
+import com.pig4cloud.pig.dc.api.vo.OrderVo;
 import com.pig4cloud.pig.dc.biz.mapper.OscMajorMapper;
 import com.pig4cloud.pig.dc.biz.service.*;
 import io.swagger.annotations.Api;
@@ -206,4 +207,18 @@ public class MiniIndexController {
 		Page page1 = oscMajorMapper.search(page,dto);
 		return R.ok(page1);
 	}
+
+
+	/**
+	 * 根据id查询导航详情
+	 * @param id id
+	 * @return R
+	 */
+	@ApiOperation(value = "根据id查询导航详情", notes = "根据id查询导航详情" )
+	@GetMapping("/guide/details/{id}" )
+	public R getGuideDetails(@PathVariable Integer id) {
+		return R.ok(iOscIndexGuideService.getBaseMapper().selectById(id));
+	}
+
+
 }
