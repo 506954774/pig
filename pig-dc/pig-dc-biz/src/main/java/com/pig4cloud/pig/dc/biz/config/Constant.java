@@ -21,6 +21,8 @@ public class Constant {
 
 	//系统参数:会员价格
 	public static final String MEMBER_PRICE = "MEMBER_PRICE";
+	//系统参数:会员优惠描述字符串
+	public static final String MEMBER_HINT = "MEMBER_HINT";
 	public static final int ORDER_LIMIT = 100000;
 	//微信是按分传参的
 	public static final int PRICE_TIME = 100;
