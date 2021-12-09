@@ -38,6 +38,8 @@
 		<result property="userId" column="user_id"/>
 		<result property="orderAmount" column="order_amount"/>
 		<result property="realname" column="realname"/>
+		<result property="nickname" column="nickname"/>
+		<result property="avatar" column="avatar"/>
 		<result property="phone" column="phone"/>
 
 
@@ -95,6 +97,8 @@
 			oo.order_amount ,
 
 			oui.realname ,
+			oui.nickname ,
+			oui.avatar ,
 			oui.phone ,
 
 		    op.image_url,
@@ -146,6 +150,8 @@
 		oo.order_amount ,
 
 		oui.realname ,
+		oui.nickname ,
+		oui.avatar ,
 		oui.phone ,
 
 		op.image_url,
@@ -161,5 +167,79 @@
 	WHERE
 	oo.order_type=1 and oo.del_flag=0
     and oo.id= #{id}
+	</select>
+
+	<select id="selectMemberOrders" resultType="com.pig4cloud.pig.dc.api.vo.OrderVo" >
+
+		SELECT
+		oo.id ,
+		oo.order_status,
+		oo.order_num ,
+		oo.third_party_id ,
+		oo.create_time ,
+		oo.cancel_time ,
+		oo.pay_time ,
+		oo.write_off_time ,
+		oo.user_id ,
+		oo.order_amount ,
+
+		oui.realname ,
+		oui.nickname ,
+		oui.avatar ,
+		oui.phone
+		FROM
+		osc_order oo
+		LEFT JOIN osc_user_info oui on oo.user_id=oui.user_id
+
+		WHERE
+		oo.order_type=0 and oo.del_flag=0
+		<if test="param.userId !=null   ">
+			and   oo.user_id=  #{param.userId}
+		</if>
+		<if test="param.orderStatus !=null   ">
+			and   oo.order_status=  #{param.orderStatus}
+		</if>
+		<if test="param.createTimeStart !=null    ">
+			and   oo.create_time &gt;=  #{param.createTimeStart}
+		</if>
+		<if test="param.createTimeEnd !=null    ">
+			and   oo.create_time &lt;=  #{param.createTimeEnd}
+		</if>
+
+		<if test="param.keyword!=null and param.keyword!='' ">
+			and   (
+			oui.realname like concat('%', #{param.keyword},'%')
+			or oui.phone like concat('%', #{param.keyword},'%')
+			)
+		</if>
+
+
+	</select>
+
+	<select id="selectMemberOrderById" resultType="com.pig4cloud.pig.dc.api.vo.OrderVo"  >
+
+		SELECT
+		oo.id ,
+		oo.order_status,
+		oo.order_num ,
+		oo.third_party_id ,
+		oo.create_time ,
+		oo.cancel_time ,
+		oo.pay_time ,
+		oo.write_off_time ,
+		oo.user_id ,
+		oo.order_amount ,
+
+		oui.realname ,
+		oui.nickname ,
+		oui.avatar ,
+		oui.phone
+		FROM
+		osc_order oo
+		LEFT JOIN osc_user_info oui on oo.user_id=oui.user_id
+
+		WHERE
+		oo.order_type=0 and oo.del_flag=0
+		and oo.id= #{id}
 	</select>
 </mapper>

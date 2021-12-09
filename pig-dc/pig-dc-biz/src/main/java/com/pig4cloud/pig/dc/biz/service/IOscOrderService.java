@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pig4cloud.pig.common.core.util.R;
-import com.pig4cloud.pig.dc.api.dto.OrderWriteOffDTO;
-import com.pig4cloud.pig.dc.api.dto.QueryOrderPageDTO;
-import com.pig4cloud.pig.dc.api.dto.UserOrderDTO;
-import com.pig4cloud.pig.dc.api.dto.WechatMiniPayDTO;
+import com.pig4cloud.pig.dc.api.dto.*;
 import com.pig4cloud.pig.dc.api.entity.OscOrder;
 import com.pig4cloud.pig.dc.api.vo.OrderCountVo;
 import com.pig4cloud.pig.dc.api.vo.OrderVo;
@@ -125,4 +122,27 @@ public interface IOscOrderService extends IService<OscOrder> {
 	 *
 	 * */
 	Integer writeOff(OrderWriteOffDTO dto);
+
+	/**
+	 * @Name:
+	 * @Description: 查询会员订单分页
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/9 10:06
+	 *
+	 * */
+	Page<OrderVo> queryMemberOrderPage(QueryMemberOrderPageDTO dto);
+
+	/**
+	 * @Name: 
+	 * @Description: 根据id查询会员订单详情 
+	 * @Param: 
+	 * @return: 
+	 * @Author: LeiChen
+	 * @Date:2021/12/9 10:57
+	 *
+	 * */
+	
+	OrderVo queryMemberOrderdDetails(Integer id);
 }

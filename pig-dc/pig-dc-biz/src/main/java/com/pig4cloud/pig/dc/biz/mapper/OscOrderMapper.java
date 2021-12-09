@@ -3,6 +3,7 @@ package com.pig4cloud.pig.dc.biz.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pig4cloud.pig.dc.api.dto.QueryMemberOrderPageDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryOrderPageDTO;
 import com.pig4cloud.pig.dc.api.dto.WebQueryMajorPageDTO;
 import com.pig4cloud.pig.dc.api.entity.OscOrder;
@@ -62,4 +63,30 @@ public interface OscOrderMapper extends BaseMapper<OscOrder> {
 	 *
 	 * */
 	OrderVo selectOrderById ( @Param("id") Integer id);
+
+
+
+	/**
+	 * @Name:
+	 * @Description: 查询会员订单分页
+	 *
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/6 22:07
+	 *
+	 * */
+	Page<OrderVo> selectMemberOrders(IPage page, @Param("param") QueryMemberOrderPageDTO param);
+
+
+	/**
+	 * @Name:
+	 * @Description: 根据id查询会员订单详情
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/7 19:34
+	 *
+	 * */
+	OrderVo selectMemberOrderById ( @Param("id") Integer id);
 }

@@ -90,6 +90,12 @@ public class OrderVo  implements Serializable {
 	private String phone;
 
 
+	@ApiModelProperty( value = "昵称" , required = true)
+	private String nickname;
+
+
+	@ApiModelProperty( value = "头像" , required = true)
+	private String avatar;
 
 //////////////////////////////////////////////////////////
 

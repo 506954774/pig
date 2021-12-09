@@ -288,6 +288,23 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 		return oscOrder.getId();
 	}
 
+	@Override
+	public Page<OrderVo> queryMemberOrderPage(QueryMemberOrderPageDTO dto) {
+		if(dto==null){
+			dto=new QueryMemberOrderPageDTO();
+		}
+		Page page=new Page();
+		page.setCurrent(dto.getCurrent());
+		page.setSize(dto.getSize());
+		Page page1 = getBaseMapper().selectMemberOrders(page, dto);
+		return page1;
+	}
+
+	@Override
+	public OrderVo queryMemberOrderdDetails(Integer id) {
+		return getBaseMapper().selectMemberOrderById(id);
+	}
+
 	/***
 	 * 生成会员订单
 	 * @param user

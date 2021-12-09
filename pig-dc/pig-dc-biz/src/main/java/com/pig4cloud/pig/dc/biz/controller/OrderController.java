@@ -3,6 +3,7 @@ package com.pig4cloud.pig.dc.biz.controller;
 import cn.felord.payment.wechat.v3.WechatApiProvider;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.dc.api.dto.OrderWriteOffDTO;
+import com.pig4cloud.pig.dc.api.dto.QueryMemberOrderPageDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryOrderPageDTO;
 import com.pig4cloud.pig.dc.api.vo.OrderCountVo;
 import com.pig4cloud.pig.dc.api.vo.OrderVo;
@@ -58,11 +59,11 @@ public class OrderController {
 
 
 	/**
-	 *  根据uid查询订单分页列表
+	 *  查询商品订单分页列表
 	 *
 	 * @return
 	 */
-	@ApiOperation(value = "查询订单分页列表", notes = " 查询订单分页列表",response = OrderVo.class)
+	@ApiOperation(value = "查询商品订单分页列表", notes = " 查询商品订单分页列表",response = OrderVo.class)
 	@PostMapping("/page")
 	public R page(@RequestBody @Valid QueryOrderPageDTO dto) {
 		return R.ok(oscOrderService.queryOrderPage(dto));
@@ -92,6 +93,30 @@ public class OrderController {
 	@PostMapping("/write_off")
 	public R writeOff(@RequestBody @Valid OrderWriteOffDTO dto) {
 		return R.ok(oscOrderService.writeOff(dto));
+	}
+
+
+	/**
+	 *  查询会员订单分页列表
+	 *
+	 * @return
+	 */
+	@ApiOperation(value = "查询会员订单分页列表", notes = " 查询会员订单分页列表",response = OrderVo.class)
+	@PostMapping("/member_order/page")
+	public R queryMemberOrderPage(@RequestBody @Valid QueryMemberOrderPageDTO dto) {
+		return R.ok(oscOrderService.queryMemberOrderPage(dto));
+	}
+
+
+	/**
+	 * 根据id查询会员订单详情
+	 * @param id id
+	 * @return R
+	 */
+	@ApiOperation(value = "根据id查询会员订单详情", notes = "根据id查询会员订单详情",response = OrderVo.class)
+	@GetMapping("/member_order/details/{id}" )
+	public R queryMemberOrderdDetails(@PathVariable Integer id) {
+		return R.ok(oscOrderService.queryMemberOrderdDetails(id));
 	}
 
 }
