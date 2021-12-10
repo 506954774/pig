@@ -14,4 +14,19 @@
         <result column="update_time" property="updateTime" />
         <result column="create_by" property="createBy" />
     </resultMap>
+
+	<select id="selectOscCollegeByName" resultType="com.pig4cloud.pig.dc.api.entity.OscCollege" >
+		SELECT
+			oc.*
+		FROM
+			osc_college oc
+				LEFT JOIN
+			osc_university_college ouc ON oc.id = ouc.college_id
+				LEFT JOIN
+			osc_university ou on ouc.university_id= ou.id
+		WHERE
+			oc.college_name= #{collegeName}
+         and ouc.university_id =#{universityId}
+
+	</select>
 </mapper>

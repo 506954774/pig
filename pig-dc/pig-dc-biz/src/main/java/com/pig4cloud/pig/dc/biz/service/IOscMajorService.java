@@ -1,6 +1,7 @@
 package com.pig4cloud.pig.dc.biz.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pig4cloud.pig.dc.api.dto.BatchAddOscMajorDTO;
 import com.pig4cloud.pig.dc.api.entity.OscMajor;
 
 /**
@@ -13,4 +14,5 @@ import com.pig4cloud.pig.dc.api.entity.OscMajor;
  */
 public interface IOscMajorService extends IService<OscMajor> {
 
+    Integer batchSave(BatchAddOscMajorDTO dto);
 }

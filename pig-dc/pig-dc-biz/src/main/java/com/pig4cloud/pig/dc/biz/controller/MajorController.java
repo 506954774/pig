@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.pig.dc.api.dto.AddOscMajorDTO;
+import com.pig4cloud.pig.dc.api.dto.BatchAddOscMajorDTO;
 import com.pig4cloud.pig.dc.api.dto.WebQueryMajorPageDTO;
 import com.pig4cloud.pig.dc.api.entity.OscMajor;
 import com.pig4cloud.pig.dc.biz.mapper.OscMajorMapper;
@@ -44,6 +45,17 @@ public class MajorController {
 		entity.setCreateTime(new Date());
 		entity.setCreateBy(SecurityUtils.getUser().getId()+"");
 		return R.ok(iOscMajorService.save(entity ));
+	}
+
+	/**
+	 * 批量导入专业
+	 * @param dto
+	 * @return
+	 */
+	@ApiOperation(value = "批量导入专业 ", notes = "批量导入专业 ")
+	@PostMapping("/batch_add")
+	public R batchSave(  @RequestBody @Valid BatchAddOscMajorDTO dto) {
+		return R.ok(iOscMajorService.batchSave(dto ));
 	}
 
 
