@@ -101,5 +101,10 @@ public class OscOrder extends Model<OscOrder> {
 	@ApiModelProperty( value = "核销人" , required = true)
 	private String writeOffBy;
 
+	@ApiModelProperty( value = "退款单号" , required = true)
+	private String refundNum;
+
+	@ApiModelProperty( value = "退款操作者" , required = true)
+	private String refundOperator;
 
 }

@@ -225,6 +225,51 @@ public class MiniOrderController {
 	}
 
 
+	/**
+	 * 微信退款成功回调.
+	 * 这个地址是配置在yml里的.由域名和notifyUrl拼接而成
+	 * notifyUrl只写域名后面的就行
+	 *  domain: https://rdch.sfwal.com
+	 *  refundNotifyUrl: /dc/mini/order/wechat/refund_notify
+	 * <p>
+	 *  退款成功微信才会回调此接口
+	 *
+	 * @param wechatpaySerial    the wechatpay serial
+	 * @param wechatpaySignature the wechatpay signature
+	 * @param wechatpayTimestamp the wechatpay timestamp
+	 * @param wechatpayNonce     the wechatpay nonce
+	 * @param request            the request
+	 * @return the map
+	 */
+	@ApiIgnore
+	@ApiOperation(value = "微信退款成功回调", notes = "微信退款成功回调")
+	@SneakyThrows
+	@Transactional(rollbackFor = Exception.class)
+	@PostMapping("/wechat/refund_notify")
+
+	public Map<String, ?> refundCallback(
+			@RequestHeader("Wechatpay-Serial") String wechatpaySerial,
+			@RequestHeader("Wechatpay-Signature") String wechatpaySignature,
+			@RequestHeader("Wechatpay-Timestamp") String wechatpayTimestamp,
+			@RequestHeader("Wechatpay-Nonce") String wechatpayNonce,
+			HttpServletRequest request) {
+		log.info("=================================================================微信退款回调refundCallback");
+
+		String body = request.getReader().lines().collect(Collectors.joining());
+		// 对请求头进行验签 以确保是微信服务器的调用
+		ResponseSignVerifyParams params = new ResponseSignVerifyParams();
+		params.setWechatpaySerial(wechatpaySerial);
+		params.setWechatpaySignature(wechatpaySignature);
+		params.setWechatpayTimestamp(wechatpayTimestamp);
+		params.setWechatpayNonce(wechatpayNonce);
+		params.setBody(body);
+		return wechatApiProvider.callback(Constant.TANANTID).transactionCallback(params, data -> {
+			//TODO 对回调解析的结果进行消费
+			log.info("对回调解析的结果进行消费,{}",data);
+
+		});
+	}
+
 
 	/**
 	 *  根据uid查询订单数量统计

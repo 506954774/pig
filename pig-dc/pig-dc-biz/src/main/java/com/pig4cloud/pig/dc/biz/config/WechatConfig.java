@@ -63,5 +63,7 @@ public class WechatConfig {
 	private String certPath;
 	@Value("${wechat.notifyUrl}")
 	private String notifyUrl;
+	@Value("${wechat.refundNotifyUrl}")
+	private String refundNotifyUrl;
 
 }

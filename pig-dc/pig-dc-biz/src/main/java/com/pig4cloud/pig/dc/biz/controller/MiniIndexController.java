@@ -3,6 +3,7 @@ package com.pig4cloud.pig.dc.biz.controller;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.dc.api.dto.QueryGuidePageDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryIndexPageDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
 import com.pig4cloud.pig.dc.api.dto.WebQueryMajorPageDTO;
@@ -75,16 +76,17 @@ public class MiniIndexController {
 	 */
 	@ApiOperation(value = " 首页导航分页列表", notes = " 首页导航分页列表")
 	@PostMapping("/guide/page")
-	public R queryGuidePage(@RequestBody @Valid QueryPageDTO dto) {
+	public R queryGuidePage(@RequestBody @Valid QueryGuidePageDTO dto) {
 		if(dto==null){
-			dto=new QueryPageDTO();
+			dto=new QueryGuidePageDTO();
 		}
 		Page page=new Page();
 		page.setCurrent(dto.getCurrent());
 		page.setSize(dto.getSize());
-		final QueryPageDTO finalDto = dto;
+		final QueryGuidePageDTO finalDto = dto;
 		Page page1 = iOscIndexGuideService.getBaseMapper().selectPage(
 				page, Wrappers.<OscIndexGuide>query().lambda()
+						.eq(dto.getIndexType()!=null,OscIndexGuide::getIndexType,dto.getIndexType())
 						.and(!TextUtils.isEmpty(dto.getKeyword()),wrapper -> wrapper
 								. like(OscIndexGuide::getTitle, finalDto.getKeyword())
 								.or(). like(OscIndexGuide::getContent, finalDto.getKeyword()))

@@ -1,10 +1,13 @@
 package com.pig4cloud.pig.dc.biz.service.impl;
+import com.google.common.collect.Lists;
+import cn.felord.payment.wechat.v3.model.RefundParams.RefundAmount;
 
 import cn.felord.payment.wechat.v3.WechatApiProvider;
 import cn.felord.payment.wechat.v3.WechatResponseEntity;
 import cn.felord.payment.wechat.v3.model.Amount;
 import cn.felord.payment.wechat.v3.model.PayParams;
 import cn.felord.payment.wechat.v3.model.Payer;
+import cn.felord.payment.wechat.v3.model.RefundParams;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -303,6 +306,45 @@ public class OscOrderServiceImpl extends ServiceImpl<OscOrderMapper, OscOrder> i
 	@Override
 	public OrderVo queryMemberOrderdDetails(Integer id) {
 		return getBaseMapper().selectMemberOrderById(id);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public Integer refund(OrderWriteOffDTO dto) {
+		OscOrder oscOrder = getBaseMapper().selectById(dto.getOrderId());
+		if(oscOrder==null){
+			throw new BizException("订单不存在或者已被删除");
+		}
+		if(!oscOrder.getOrderStatus().equals(OrderStatusEnum.PAID.getTypeCode())){
+			throw new BizException("订单当前不是已支付状态,无法退款");
+		}
+
+		oscOrder.setRefundNum(RandomGenerator.generateRandomByDate(Constant.ORDER_LIMIT));
+
+		RefundParams params=new RefundParams();
+		params.setTransactionId(oscOrder.getThirdPartyId());
+		params.setOutTradeNo(oscOrder.getOrderNum());
+		params.setOutRefundNo(oscOrder.getRefundNum());
+		//params.setReason("");
+		params.setNotifyUrl(wechatConfig.getRefundNotifyUrl());
+		//params.setFundsAccount("");
+		RefundAmount amount=new RefundAmount();
+		//amount.setForm(Lists.newArrayList());
+		BigDecimal price= Constant.TIMES.multiply(oscOrder.getOrderAmount());
+		amount.setTotal(price.intValue());
+		amount.setCurrency(Constant.CNY);
+		amount.setRefund(price.intValue());
+		params.setAmount(amount);
+		//params.setGoodsDetail(Lists.newArrayList());
+
+		log.info("退款参数,{}",params);
+		wechatApiProvider.directPayApi(Constant.TANANTID).refund(params);
+
+		oscOrder.setRefundOperator(SecurityUtils.getUser().getId()+"");
+		oscOrder.setOrderStatus(OrderStatusEnum.APPLIED.getTypeCode());
+		getBaseMapper().updateById(oscOrder);
+
+		return oscOrder.getId();
 	}
 
 	/***

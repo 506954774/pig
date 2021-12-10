@@ -97,6 +97,18 @@ public class OrderController {
 
 
 	/**
+	 *  订单全额退款退款
+	 *
+	 * @return
+	 */
+	@ApiOperation(value = "订单全额退款退款", notes = " 订单全额退款退款" )
+	@PostMapping("/refund")
+	public R refund(@RequestBody @Valid OrderWriteOffDTO dto) {
+		return R.ok(oscOrderService.refund(dto));
+	}
+
+
+	/**
 	 *  查询会员订单分页列表
 	 *
 	 * @return

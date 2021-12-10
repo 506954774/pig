@@ -47,7 +47,7 @@ public class RedisConfig {
 		//出勤天数统计
 		//configMap.put("attendanceDays", config.entryTtl(Duration.ofMinutes(30L)));
 		//出勤记录统计
-		configMap.put("queryExchangeRate", config.entryTtl(Duration.ofHours(24L)));
+		configMap.put("queryExchangeRate", config.entryTtl(Duration.ofHours(1L)));
 		//永久 key1 的有效期是永久的
 		//configMap.put("distributor", config);
 		//需要先初始化缓存名称，再初始化其它的配置。

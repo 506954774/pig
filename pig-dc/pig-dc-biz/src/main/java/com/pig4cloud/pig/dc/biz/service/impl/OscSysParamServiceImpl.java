@@ -46,7 +46,7 @@ public class OscSysParamServiceImpl extends ServiceImpl<OscSysParamMapper, OscSy
 	private final RestTemplate restTemplate;
 	private final ExchangeRateApiConfig exchangeRateApiConfig;
 	private final ExchangeRateApiFeignClient exchangeRateApiFeignClient;
-	private final IOscSysParamService _this;
+	//private final IOscSysParamService _this; //注入自己会导致循环依赖
 
 
 	@Override
@@ -108,8 +108,8 @@ public class OscSysParamServiceImpl extends ServiceImpl<OscSysParamMapper, OscSy
 		//ArrayList<String> strings=new ArrayList<>();
 		//strings.addAll(Arrays.asList(exchangeRateApiConfig.getCurrency().split(Constant.SEPCTOR)));
 		dto.setParams(Arrays.asList(exchangeRateApiConfig.getCurrency().split(Constant.SEPCTOR)));
-		//由于@Cacheable是通过动态代理执行的,内部调用不会走aop
-		return  _this.queryExchangeRate( dto);
+		//由于@Cacheable是通过动态代理执行的,内部调用不会走aop,此处要么另外调用,要么拿到bean再调用
+		return  queryExchangeRate( dto);
 		//return queryExchangeRate( dto);
 	}
 

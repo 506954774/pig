@@ -145,4 +145,15 @@ public interface IOscOrderService extends IService<OscOrder> {
 	 * */
 	
 	OrderVo queryMemberOrderdDetails(Integer id);
+
+	/**
+	 * @Name:
+	 * @Description: 订单全额退款
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2021/12/10 14:26
+	 *
+	 * */
+    Integer refund(OrderWriteOffDTO dto);
 }
