@@ -43,7 +43,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class OscSysParamServiceImpl extends ServiceImpl<OscSysParamMapper, OscSysParam> implements IOscSysParamService {
 
-	private final RestTemplate restTemplate;
+	//private final RestTemplate restTemplate;
 	private final ExchangeRateApiConfig exchangeRateApiConfig;
 	private final ExchangeRateApiFeignClient exchangeRateApiFeignClient;
 	//private final IOscSysParamService _this; //注入自己会导致循环依赖
@@ -77,26 +77,12 @@ public class OscSysParamServiceImpl extends ServiceImpl<OscSysParamMapper, OscSy
 
 		for (String money:dto.getParams()){
 			//调用接口,查询汇率,每次接口只能查一个
+			ExchangeRateResponse response = exchangeRateApiFeignClient.queryChannels("APPCODE " + exchangeRateApiConfig.getAppCode(), money, "1", "CNY");
+			log.info("第三方汇率接口返回值,{}",response);
 
-			// 请求地址
-			String url = "https://ali-waihui.showapi.com/waihui-transform?fromCode=$&money=1&toCode=CNY";
-			url=url.replace("$",money);
-			log.info("汇率转换,url:{}",url);
-
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			headers.set("Authorization","APPCODE "+exchangeRateApiConfig.getAppCode());
-			log.info("汇率转换,getAppCode:{}",exchangeRateApiConfig.getAppCode());
-			HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
-
-			RestTemplate restTemplate =new RestTemplate();
-			ResponseEntity<ExchangeRateResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, ExchangeRateResponse.class);
-			log.info("第三方汇率接口返回值,{}",responseEntity);
-
-			if(responseEntity!=null){
-				result.put(money,responseEntity.getBody().getShowapi_res_body().getMoney());
+			if(response!=null){
+				result.put(money,response.getShowapi_res_body().getMoney());
 			}
-
 		}
 
 		return result;
@@ -187,4 +173,39 @@ public class OscSysParamServiceImpl extends ServiceImpl<OscSysParamMapper, OscSy
 		return result;
 	}
 */
+
+
+	/*@Cacheable(cacheNames = {"queryExchangeRate"}, key="#dto.params")
+	@Override
+	public Map<String, String> queryExchangeRate(@Valid QueryExchangeRateDTO dto) {
+
+		//key:币种,value:对人民币的汇率
+		Map<String, String> result=new HashMap<>();
+
+		for (String money:dto.getParams()){
+			//调用接口,查询汇率,每次接口只能查一个
+
+			// 请求地址
+			String url = "https://ali-waihui.showapi.com/waihui-transform?fromCode=$&money=1&toCode=CNY";
+			url=url.replace("$",money);
+			log.info("汇率转换,url:{}",url);
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			headers.set("Authorization","APPCODE "+exchangeRateApiConfig.getAppCode());
+			log.info("汇率转换,getAppCode:{}",exchangeRateApiConfig.getAppCode());
+			HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+
+			RestTemplate restTemplate =new RestTemplate();
+			ResponseEntity<ExchangeRateResponse> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, ExchangeRateResponse.class);
+			log.info("第三方汇率接口返回值,{}",responseEntity);
+
+			if(responseEntity!=null){
+				result.put(money,responseEntity.getBody().getShowapi_res_body().getMoney());
+			}
+
+		}
+
+		return result;
+	}*/
 }

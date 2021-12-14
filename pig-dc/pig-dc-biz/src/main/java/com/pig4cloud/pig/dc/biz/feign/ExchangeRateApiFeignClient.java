@@ -16,7 +16,7 @@ import java.util.Map;
  * Copyright :  版权所有
  **/
 
-@FeignClient(url="https://ali-waihui.showapi.com",name = "cloudUserFeignClient"   )
+@FeignClient(url="https://ali-waihui.showapi.com",name = "exchangeRateApiFeignClient"   )
 public interface ExchangeRateApiFeignClient {
 
 

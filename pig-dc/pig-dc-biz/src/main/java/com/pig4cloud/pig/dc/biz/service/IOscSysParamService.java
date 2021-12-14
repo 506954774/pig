@@ -41,7 +41,7 @@ public interface IOscSysParamService extends IService<OscSysParam> {
 	 * @Date:2021/12/9 15:44
 	 *
 	 * */
-	@Cacheable(cacheNames = {"queryExchangeRate"}, key="#dto.params")
+	//@Cacheable(cacheNames = {"queryExchangeRate"}, key="#dto.params")
 	Map<String,String> queryExchangeRate(@Valid QueryExchangeRateDTO dto);
 
 
