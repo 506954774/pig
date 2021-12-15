@@ -43,7 +43,8 @@ public class OscMajorVo extends Model<OscMajorVo> {
 
 
 
-
+	@ApiModelProperty( value = "学校id" , required = true)
+	private Integer universityId;
 
     @ApiModelProperty( value = "学校中文名" , required = true)
     private String universityName;
@@ -70,6 +71,8 @@ public class OscMajorVo extends Model<OscMajorVo> {
 
 
 
+	@ApiModelProperty( value = "学院id" , required = true)
+	private Integer collegeId;
 
 	@ApiModelProperty( value = "学院中文名" , required = true)
 	private String collegeName;
