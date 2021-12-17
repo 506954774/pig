@@ -21,10 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.apache.http.util.TextUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Date;
@@ -64,6 +61,30 @@ public class AreaController {
 		entity.setCreateBy(SecurityUtils.getUser().getId()+"");
 		iOscAreaService.getBaseMapper().insert(entity);
 		return R.ok(entity.getId());
+	}
+
+	/**
+	 * 通过id删除地区
+	 * @param id id
+	 * @return R
+	 */
+	@ApiOperation(value = "通过id删除地区", notes = "通过id删除地区")
+	@DeleteMapping("/{id}" )
+	public R removeById(@PathVariable Integer id) {
+		return R.ok(iOscAreaService.getBaseMapper().deleteById(id));
+	}
+
+
+	/**
+	 * 修改地区
+	 * @param dto
+	 * @return
+	 */
+	@ApiOperation(value = "修改地区 ", notes = "修改地区 ")
+	@PostMapping("/update")
+	public R update( @RequestBody @Valid OscArea dto) {
+		iOscAreaService.updateById(dto);
+		return R.ok(null);
 	}
 
 	/**

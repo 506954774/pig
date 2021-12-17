@@ -1,11 +1,13 @@
 package com.pig4cloud.pig.dc.biz.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.pig.dc.api.dto.AddIndexGuideDTO;
+import com.pig4cloud.pig.dc.api.dto.QueryIndexGuidePageDTO;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
 import com.pig4cloud.pig.dc.api.entity.OscEnrollInfo;
 import com.pig4cloud.pig.dc.api.entity.OscIndexGuide;
@@ -81,16 +83,17 @@ public class IndexGuideController {
 	 */
 	@ApiOperation(value = " 首页导航分页列表", notes = " 首页导航分页列表")
 	@PostMapping("/page")
-	public R page(@RequestBody @Valid QueryPageDTO dto) {
+	public R page(@RequestBody @Valid QueryIndexGuidePageDTO dto) {
 		if(dto==null){
-			dto=new QueryPageDTO();
+			dto=new QueryIndexGuidePageDTO();
 		}
 		Page page=new Page();
 		page.setCurrent(dto.getCurrent());
 		page.setSize(dto.getSize());
-		final QueryPageDTO finalDto = dto;
+		final QueryIndexGuidePageDTO finalDto = dto;
 		Page page1 = iOscIndexGuideService.getBaseMapper().selectPage(
 				page, Wrappers.<OscIndexGuide>query().lambda()
+						.in(CollectionUtils.isNotEmpty(dto.getIndexTypes()),OscIndexGuide::getIndexType,dto.getIndexTypes())
 						.and(!TextUtils.isEmpty(dto.getKeyword()),wrapper -> wrapper
 								. like(OscIndexGuide::getTitle, finalDto.getKeyword())
 								.or(). like(OscIndexGuide::getContent, finalDto.getKeyword()))
