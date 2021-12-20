@@ -26,6 +26,7 @@ import com.pig4cloud.pig.common.core.exception.ValidateCodeException;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.core.util.WebUtils;
 import com.pig4cloud.pig.gateway.config.GatewayConfigProperties;
+import com.pig4cloud.pig.gateway.util.IpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import reactor.core.publisher.Mono;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The type Validate code gateway filter.
@@ -66,6 +72,10 @@ public class ValidateCodeGatewayFilter extends AbstractGatewayFilterFactory<Obje
 			if (!isAuthToken) {
 				return chain.filter(exchange);
 			}
+
+			//使用redis分布式锁,校验请求的频率
+			checkLoginRequest(request);
+
 
 			// 刷新token，直接向下执行
 			String grantType = request.getQueryParams().getFirst("grant_type");
@@ -137,4 +147,27 @@ public class ValidateCodeGatewayFilter extends AbstractGatewayFilterFactory<Obje
 		redisTemplate.delete(key);
 	}
 
+
+	@SneakyThrows
+	private void checkLoginRequest (ServerHttpRequest request) {
+
+		//只校验登录接口的调用频率
+		if(!SecurityConstants.OAUTH_TOKEN_URL.equals(request.getURI().getPath())){
+			return;
+		}
+
+		String ip= IpUtil.getIpAddress(request);
+
+		//设置分布式锁,key是锁id,value是当前应用进程标识,lockTime后自动删除.lockTime内能把业务做完,则不会有任何问题
+		String redisKey= ip+"_"+request.getURI().getPath();
+
+		log.info("LoginRequestFilter",redisKey);
+
+		boolean notBlocking= redisTemplate.opsForValue().setIfAbsent(redisKey,redisKey,1000, TimeUnit.MILLISECONDS);
+
+		if(!notBlocking){
+			throw new RuntimeException("操作过于频繁,请稍后再试");
+		}
+
+	}
 }

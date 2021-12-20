@@ -1,6 +1,7 @@
 package com.pig4cloud.pig.gateway.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pig4cloud.pig.gateway.filter.LoginRequestGatewayFilter;
 import com.pig4cloud.pig.gateway.filter.PasswordDecoderFilter;
 import com.pig4cloud.pig.gateway.filter.PigRequestGlobalFilter;
 import com.pig4cloud.pig.gateway.filter.ValidateCodeGatewayFilter;
@@ -44,6 +45,11 @@ public class GatewayConfiguration {
 	@Bean
 	public ImageCodeHandler imageCodeHandler(RedisTemplate redisTemplate) {
 		return new ImageCodeHandler(redisTemplate);
+	}
+
+	@Bean
+	public LoginRequestGatewayFilter loginRequestGatewayFilter(RedisTemplate redisTemplate) {
+		return new LoginRequestGatewayFilter(redisTemplate);
 	}
 
 }
