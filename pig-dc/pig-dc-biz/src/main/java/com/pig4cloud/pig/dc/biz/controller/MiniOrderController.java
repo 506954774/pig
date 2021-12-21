@@ -1,16 +1,11 @@
 package com.pig4cloud.pig.dc.biz.controller;
-import cn.felord.payment.wechat.enumeration.TradeState;
-import cn.felord.payment.wechat.v3.model.Payer;
-import cn.felord.payment.wechat.v3.model.Amount;
-import cn.felord.payment.wechat.v3.model.*;
-import cn.felord.payment.wechat.v3.WechatResponseEntity;
 
+import cn.felord.payment.wechat.enumeration.TradeState;
 import cn.felord.payment.wechat.v3.WechatApiProvider;
+import cn.felord.payment.wechat.v3.model.ResponseSignVerifyParams;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.dc.api.dto.*;
 import com.pig4cloud.pig.dc.api.entity.OscOrder;
@@ -21,8 +16,10 @@ import com.pig4cloud.pig.dc.biz.config.Constant;
 import com.pig4cloud.pig.dc.biz.config.WechatConfig;
 import com.pig4cloud.pig.dc.biz.enums.OrderStatusEnum;
 import com.pig4cloud.pig.dc.biz.enums.OrderTypeEnum;
-import com.pig4cloud.pig.dc.biz.service.*;
-import com.pig4cloud.pig.dc.biz.utils.RandomGenerator;
+import com.pig4cloud.pig.dc.biz.service.IOscAdministrativeDivisionService;
+import com.pig4cloud.pig.dc.biz.service.IOscAreaService;
+import com.pig4cloud.pig.dc.biz.service.IOscOrderService;
+import com.pig4cloud.pig.dc.biz.service.IOscUserInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -54,13 +51,9 @@ import java.util.stream.Collectors;
 @Api(value = "MiniOrderController", tags = "小程序-订单接口")
 public class MiniOrderController {
 
-	private final IOscAreaService iOscAreaService;
-	private final IOscAdministrativeDivisionService iOscAdministrativeDivisionService;
-
 
 
 	private final WechatApiProvider wechatApiProvider;
-	private final WechatConfig wechatConfig;
 	private final IOscOrderService oscOrderService;
 	private final IOscUserInfoService oscUserInfoService;
 

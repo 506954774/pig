@@ -30,6 +30,7 @@ import com.pig4cloud.pig.gateway.util.IpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.TextUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -157,6 +158,9 @@ public class ValidateCodeGatewayFilter extends AbstractGatewayFilterFactory<Obje
 		}
 
 		String ip= IpUtil.getIpAddress(request);
+		if(TextUtils.isEmpty(ip)){
+			return;
+		}
 
 		//设置分布式锁,key是锁id,value是当前应用进程标识,lockTime后自动删除.lockTime内能把业务做完,则不会有任何问题
 		String redisKey= ip+"_"+request.getURI().getPath();
