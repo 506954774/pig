@@ -82,4 +82,24 @@ public class RabbitMqSender {
         );
         log.info("{}ms后执行", startTime);
     }
+
+	/**
+	 * 发送消息
+	 *
+	 * @param exchange 交换机
+	 * @param bindingKey 队列绑定的路由key
+	 * @param content 发送的消息内容
+	 *
+	 * @author feitao <yyimba@qq.com> 2019-8-15 11:05:55
+	 */
+	public void sendMessage(String exchange, String bindingKey, String content ) {
+		log.info("===============队列生产消息====================");
+		//log.info("发送时间:{}, 发送内容:{}", LocalDateTime.now(), content);
+		amqpTemplate.convertAndSend(
+				exchange,
+				bindingKey,
+				content
+		);
+		log.info("发送时间:{}, 发送内容:{}", LocalDateTime.now(), content);
+	}
 }

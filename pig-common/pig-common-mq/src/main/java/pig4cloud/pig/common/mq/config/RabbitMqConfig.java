@@ -39,6 +39,24 @@ public class RabbitMqConfig {
         return BindingBuilder.bind(dmpQueue()).to(dmpExchange()).with(RabbitMqConstants.TOPIC_TEST).noargs();
     }
 
+	/**
+	 * 消峰mq
+	 * @return
+	 */
+	@Bean
+	public  Exchange limitedExchange(){
+		return new DirectExchange(RabbitMqConstants.EXCHANGE_LIMITED, true,false );
+	}
+
+	@Bean
+	public Queue limitedQueue(){
+		return new Queue(RabbitMqConstants.QUEUE_LIMITED,true,false,false);
+	}
+
+	@Bean
+	public Binding limitedBind(){
+		return BindingBuilder.bind(limitedQueue()).to(limitedExchange()).with(RabbitMqConstants.TOPIC_LIMITED).noargs();
+	}
 
 
 }

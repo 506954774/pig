@@ -83,6 +83,4 @@ public class OscMajorVo extends Model<OscMajorVo> {
 
 
 
-
-
 }

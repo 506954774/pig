@@ -15,16 +15,17 @@
  */
 package com.pig4cloud.pig.dc.biz.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.dc.biz.rabbitMq.receiver.MessageType;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pig4cloud.pig.common.mq.constants.RabbitMqConstants;
 import pig4cloud.pig.common.mq.sender.RabbitMqSender;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -51,6 +52,30 @@ public class MqTestController {
 		rabbitMqSender.sendDelayMessage(RabbitMqConstants.EXCHANGE_TEST,
 				RabbitMqConstants.TOPIC_TEST, message, delayTime);
 
+		return R.ok();
+	}
+
+
+
+	@GetMapping("/sendLimitedMsg")
+	public R sendLimitedMsg(@RequestBody  @Valid MessageType messageType) {
+
+		rabbitMqSender.sendMessage(RabbitMqConstants.EXCHANGE_LIMITED,
+				RabbitMqConstants.TOPIC_LIMITED, JSON.toJSONString(messageType) );
+
+		return R.ok();
+	}
+
+
+
+	@GetMapping("/sendLimitedMsg/v2")
+	public R sendLimitedMsgBatch
+			(@RequestBody  @Valid MessageType messageType) {
+
+		for (int i = 0; i < 10; i++) {
+			rabbitMqSender.sendMessage(RabbitMqConstants.EXCHANGE_LIMITED,
+					RabbitMqConstants.TOPIC_LIMITED, JSON.toJSONString(messageType) );
+		}
 		return R.ok();
 	}
 

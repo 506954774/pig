@@ -42,6 +42,7 @@
 				LEFT JOIN osc_university ou ON om.university_id = ou.id
 				LEFT JOIN osc_college oc ON om.college_id = oc.id
 				LEFT JOIN osc_area oa ON ou.area_id = oa.id
+
 		WHERE
 			om.del_flag = 0
 		<if test="param.universityId !=null   ">
@@ -106,6 +107,7 @@
 		LEFT JOIN osc_university ou ON om.university_id = ou.id
 		LEFT JOIN osc_college oc ON om.college_id = oc.id
 		LEFT JOIN osc_area oa ON ou.area_id = oa.id
+
 		WHERE
 		om.del_flag = 0
 		and   om.id=  #{id}
@@ -228,13 +230,14 @@
 			ou.university_name content1,
 			oa.area_name content2,
 			ou.qs_rank content3,
-			oc.college_name content3,
+			oc.college_name content4,
 			om.education_level content5
 			FROM
 			osc_major om
 			LEFT JOIN osc_university ou ON om.university_id = ou.id
 			LEFT JOIN osc_college oc ON om.college_id = oc.id
 			LEFT JOIN osc_area oa ON ou.area_id = oa.id
+
 			WHERE
 			om.del_flag = 0
 			<if test="param.keyword!=null and param.keyword!='' ">

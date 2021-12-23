@@ -46,8 +46,8 @@ public class OscMajor extends Model<OscMajor> {
     @ApiModelProperty( value = "学院id" , required = true)
     private Integer collegeId;
 
-    @ApiModelProperty( value = "学历等级 0副学士 1本科 2硕士 3博士" , required = true)
-    private Integer educationLevel;
+	@ApiModelProperty( value = "留学阶段id" , required = true)
+	private Integer educationLevel;
 
     @ApiModelProperty( value = "内容介绍,富文本" , required = true)
     private String descContent;

@@ -28,6 +28,20 @@ public class RabbitMqConstants {
 
 
 
+	/**
+	 *  交换机
+	 */
+	public static final String EXCHANGE_LIMITED = "EXCHANGE_LIMITED";
+
+	/**
+	 *  队列
+	 */
+	public static final String QUEUE_LIMITED = "QUEUE_LIMITED";
+
+	/**
+	 *  topic
+	 */
+	public static final String TOPIC_LIMITED = "TOPIC_LIMITED";
 
 
 

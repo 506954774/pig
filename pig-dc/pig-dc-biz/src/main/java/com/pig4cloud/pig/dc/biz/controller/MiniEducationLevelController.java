@@ -26,51 +26,13 @@ import java.util.Date;
  */
 @RestController
 @AllArgsConstructor
-@RequestMapping("/education_level")
-@Api(value = "EducationLevelController", tags = "留学阶段管理")
-public class EducationLevelController {
+@RequestMapping("/mini/education_level")
+@Api(value = "MiniEducationLevelController", tags = "小程序-留学阶段")
+public class MiniEducationLevelController {
 
 	private final IOscEducationLevelService iOscEducationLevelService;
 
 
-	/**
-	 * 新增留学阶段
-	 * @param dto
-	 * @return
-	 */
-	@ApiOperation(value = "新增留学阶段 ", notes = "新增留学阶段 ")
-	@PostMapping("/add")
-	public R save(  @RequestBody @Valid AddEducationLevelDTO dto) {
-		OscEducationLevel entity= BeanUtil.copyProperties(dto,OscEducationLevel.class);
-		entity.setCreateTime(new Date());
-		entity.setCreateBy(SecurityUtils.getUser().getId()+"");
-		return R.ok(iOscEducationLevelService.save(entity ));
-	}
-
-
-	/**
-	 * 通过id删除留学阶段
-	 * @param id id
-	 * @return R
-	 */
-	@ApiOperation(value = "通过id删除留学阶段", notes = "通过id删除留学阶段")
-	@DeleteMapping("/{id}" )
-	public R removeById(@PathVariable Integer id) {
-		return R.ok(iOscEducationLevelService.getBaseMapper().deleteById(id));
-	}
-
-
-	/**
-	 * 修改留学阶段
-	 * @param dto
-	 * @return
-	 */
-	@ApiOperation(value = "修改留学阶段 ", notes = "修改留学阶段 ")
-	@PostMapping("/update")
-	public R update( @RequestBody @Valid OscEducationLevel dto) {
-		iOscEducationLevelService.updateById(dto);
-		return R.ok(null);
-	}
 
 
 

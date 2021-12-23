@@ -29,34 +29,43 @@ public class OscEducationLevel extends Model<OscEducationLevel> {
 
 
 
-    @ApiModelProperty( value = "主键" , required = true)
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+	@ApiModelProperty( value = "主键" , required = true)
+	@TableId(value = "id", type = IdType.AUTO)
+	private Integer id;
 
-    @ApiModelProperty( value = "名称,中文" , required = true)
-    private String educationLevelName;
+	@ApiModelProperty( value = "类型" , required = true)
+	private Integer educationType;
 
-    @ApiModelProperty( value = "名称,英文" , required = true)
-    private String educationLevelNameEng;
+	@ApiModelProperty( value = "标题" , required = true)
+	private String title;
+
+	@ApiModelProperty( value = "缩略图" , required = true)
+	private String iocnUrl;
+
+	@ApiModelProperty( value = "新闻地址" , required = true)
+	private String webUrl;
+
+	@ApiModelProperty( value = " 富文本" , required = true)
+	private String content;
 
 	@ApiModelProperty( value = "排序,大的在前面" , required = true)
 	private Integer educationLevelSort;
 
-    @ApiModelProperty( value = "状态,0正常 1冻结" , required = true)
-    private String lockFlag;
+	@ApiModelProperty( value = "状态,0正常 1冻结" , required = true)
+	private String lockFlag;
 
 	@TableLogic
 	@ApiModelProperty( value = "删除标识,0未删除 1已删除" , required = true)
-    private String delFlag;
+	private String delFlag;
 
-    @ApiModelProperty( value = "创建时间" , required = true)
-    private Date createTime;
+	@ApiModelProperty( value = "创建时间" , required = true)
+	private Date createTime;
 
-    @ApiModelProperty( value = "修改时间" , required = true)
-    private Date updateTime;
+	@ApiModelProperty( value = "修改时间" , required = true)
+	private Date updateTime;
 
-    @ApiModelProperty( value = "创建人" , required = true)
-    private String createBy;
+	@ApiModelProperty( value = "创建人" , required = true)
+	private String createBy;
 
 
 }
