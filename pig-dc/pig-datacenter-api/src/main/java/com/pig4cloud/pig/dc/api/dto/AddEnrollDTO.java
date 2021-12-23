@@ -30,7 +30,7 @@ public class AddEnrollDTO extends Model<AddEnrollDTO> {
 
 
 
-	@NotNull(message = "专业id不能为空")
+	//@NotNull(message = "专业id不能为空")
 	@ApiModelProperty( value = "意向的专业id" , required = true)
 	private Integer majorId;
 

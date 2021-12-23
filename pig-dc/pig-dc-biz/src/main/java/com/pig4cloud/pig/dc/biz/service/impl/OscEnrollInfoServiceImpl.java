@@ -38,14 +38,14 @@ public class OscEnrollInfoServiceImpl extends ServiceImpl<OscEnrollInfoMapper, O
 
 	@Override
 	public Integer saveInfo(AddEnrollDTO dto) {
-		OscUserInfo oscUserInfo = oscUserInfoMapper.selectById(dto.getUserId());
+		/*OscUserInfo oscUserInfo = oscUserInfoMapper.selectById(dto.getUserId());
 		if(oscUserInfo==null){
 			throw new BizException("用户不存在或者已被删除");
-		}
-		OscMajor oscMajor = oscMajorMapper.selectById(dto.getMajorId());
+		}*/
+		/*OscMajor oscMajor = oscMajorMapper.selectById(dto.getMajorId());
 		if(oscMajor==null){
 			throw new BizException("专业不存在或者已被删除");
-		}
+		}*/
 		OscEnrollInfo entity= BeanUtil.copyProperties(dto,OscEnrollInfo.class);
 		//entity.setUserTel(oscUserInfo.getPhone());
 		entity.setCreateTime(new Date());
