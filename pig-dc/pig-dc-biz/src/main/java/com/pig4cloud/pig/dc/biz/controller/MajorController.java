@@ -35,6 +35,7 @@ public class MajorController {
 
 	/**
 	 * 新增专业
+	 *
 	 * @param dto
 	 * @return
 	 */
