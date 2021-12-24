@@ -23,20 +23,10 @@ public class AddEnrollDTO extends Model<AddEnrollDTO> {
     private static final long serialVersionUID = 1L;
 
 
-	//@NotNull(message = "报名者id不能为空")
-	@ApiModelProperty( value = "报名者id" , required = true)
-	private Integer userId;
 
 
 
-
-	//@NotNull(message = "专业id不能为空")
-	@ApiModelProperty( value = "意向的专业id" , required = true)
-	private Integer majorId;
-
-
-
-	@ApiModelProperty( value = "申请的课程（二选一） 0:本科 1:研究生" , required = true)
+	@ApiModelProperty( value = "申请的课程（二选一） 0:本科 1:硕士 2:博士" , required = true)
 	private String applyType;
 
 	//@NotNull(message = "高中名称不能为空")
@@ -87,6 +77,22 @@ public class AddEnrollDTO extends Model<AddEnrollDTO> {
 	@ApiModelProperty( value = "报名者微信号码" , required = true)
 	private String userWechatAccount;
 
-	@ApiModelProperty( value = "联系人" , required = true)
-	private String contact;
+
+	@ApiModelProperty( value = "您目前所学专业及大学均分（GPA） （必填）" , required = true)
+	private String universityGpa;
+
+	@ApiModelProperty( value = "您目前是否有语言成绩 CECT分数 （必填）" , required = true)
+	private String universityCectScore;
+
+	@ApiModelProperty( value = "硕士就读院校 （必填）" , required = true)
+	private String masterSchoolName;
+
+	@ApiModelProperty( value = "您目前所在的年级（单选）" , required = true)
+	private String masterGrade;
+
+	@ApiModelProperty( value = "您目前所学专业及大学均分（GPA）" , required = true)
+	private String masterGpa;
+
+	@ApiModelProperty( value = "您目前是否有语言成绩 CECT" , required = true)
+	private String masterCectScore;
 }
