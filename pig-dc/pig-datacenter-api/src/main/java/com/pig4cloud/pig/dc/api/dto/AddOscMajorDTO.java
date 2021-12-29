@@ -66,5 +66,18 @@ public class AddOscMajorDTO extends Model<AddOscMajorDTO> {
 	private String notMemberContent;
 
 
+	@ApiModelProperty( value = "学制" , required = true)
+	private String educationalSystem;
+
+	@ApiModelProperty( value = "学费" , required = true)
+	private String tuitionFee;
+
+	@ApiModelProperty( value = "申请时间的富文本展示" , required = true)
+	private String applyTimeContent;
+
+	@ApiModelProperty( value = "语言要求的富文本展示" , required = true)
+	private String languageRequirementsContent;
+
+
 
 }

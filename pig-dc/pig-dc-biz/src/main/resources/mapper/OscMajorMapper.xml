@@ -100,7 +100,11 @@
 		om.requirement_content majorRequirementContent,
 		om.member_content majorMemberContent,
 		ou.image_url universityImageUrl,
-		ou.content universityDescContent
+		ou.content universityDescContent,
+		om.educational_system educationalSystem,
+		om.tuition_fee tuitionFee,
+		om.apply_time_content applyTimeContent,
+		om.language_requirements_content languageRequirementsContent
 
 		FROM
 		osc_major om
