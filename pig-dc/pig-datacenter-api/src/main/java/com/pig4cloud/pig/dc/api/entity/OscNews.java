@@ -61,4 +61,7 @@ public class OscNews extends Model<OscNews> {
 	@ApiModelProperty( value = "首页推荐 0 否 1 是" , required = true)
 	private Integer recommendFlag;
 
+	@ApiModelProperty( value = "排序字段" , required = true)
+	private Integer newsSort;
+
 }

@@ -95,7 +95,8 @@ public class NewsController {
 								. like(OscNews::getTitle, finalDto.getKeyword())
 								.or(). like(OscNews::getWebUrl, finalDto.getKeyword()))
 						//.like(!TextUtils.isEmpty(dto.getKeyword()),OscNews::getTitle, dto.getKeyword())
-				.orderByDesc(OscNews::getCreateTime)
+				.orderByDesc(OscNews::getNewsSort)
+				//.orderByDesc(OscNews::getCreateTime)
 
 		);
 		return R.ok(page1);
