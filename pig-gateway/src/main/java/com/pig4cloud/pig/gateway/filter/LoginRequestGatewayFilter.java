@@ -70,7 +70,12 @@ public class LoginRequestGatewayFilter extends AbstractGatewayFilterFactory<Obje
 	@SneakyThrows
 	private void checkLoginRequest (ServerHttpRequest request) {
 
-		HttpServletRequest httpServletRequest =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		HttpServletRequest httpServletRequest = null;
+		try {
+			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		} catch (Exception e) {
+			return;
+		}
 
 		String ip= IpUtil.getIpAddr(httpServletRequest);
 
