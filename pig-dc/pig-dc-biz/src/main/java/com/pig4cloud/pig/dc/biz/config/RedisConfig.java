@@ -35,18 +35,6 @@ public class RedisConfig {
 		//cacheNames.add("distributor");
 
 		ConcurrentHashMap configMap = new ConcurrentHashMap<>();
-		//有效期6分钟自定义缓存时间
-		//configMap.put("roster", config.entryTtl(Duration.ofMinutes(1L)));
-		//configMap.put("roster", config.entryTtl(Duration.ofDays(1L)));
-		//出勤率总数
-		//configMap.put("attendanceCurrentlyByTotal", config.entryTtl(Duration.ofMinutes(30L)));
-		//出勤率首页
-		//configMap.put("attendanceCurrentlyByTotalHead", config.entryTtl(Duration.ofMinutes(30L)));
-		//出勤率按org类别
-		//configMap.put("attendanceCurrentlyByOrg", config.entryTtl(Duration.ofMinutes(30L)));
-		//出勤天数统计
-		//configMap.put("attendanceDays", config.entryTtl(Duration.ofMinutes(30L)));
-		//出勤记录统计
 
 		//汇率缓存,1个小时的时效
 		configMap.put("queryExchangeRate", config.entryTtl(Duration.ofHours(1L)));

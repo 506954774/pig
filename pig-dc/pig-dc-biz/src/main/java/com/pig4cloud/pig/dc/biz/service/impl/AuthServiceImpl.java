@@ -527,14 +527,21 @@ public class AuthServiceImpl {
 			result = myWxService.getUserService().getSessionInfo(code);
 			log.info("myWxService.getUserService().getSessionInfo(code).."+result);
 		} catch (WxErrorException e) {
-			e.printStackTrace();
+			log.error("myWxService.getUserService(),异常",e);
+			throw new BizException(e.getMessage());
 		}
 
 		log.info("myWxService:"+myWxService);
 
 		WxMaUserService userService = myWxService.getUserService();
 		log.info("myWxService.getUserService():"+userService);
-		WxMaPhoneNumberInfo phoneNumberInfo = userService.getPhoneNoInfo(result.getSessionKey(), encryptedData, iv);
+		WxMaPhoneNumberInfo phoneNumberInfo = null;
+		try {
+			phoneNumberInfo = userService.getPhoneNoInfo(result.getSessionKey(), encryptedData, iv);
+		} catch (Exception e) {
+			log.error("userService.getPhoneNoInfo,异常",e);
+			throw new BizException(e.getMessage());
+		}
 		log.info("调用微信接口,解密获取电话号码:"+phoneNumberInfo);
 
 
@@ -543,7 +550,13 @@ public class AuthServiceImpl {
 		}
 
 
-		WxMaUserInfo userInfo = userService.getUserInfo(result.getSessionKey(), encryptedData, iv);
+		WxMaUserInfo userInfo = null;
+		try {
+			userInfo = userService.getUserInfo(result.getSessionKey(), encryptedData, iv);
+		} catch (Exception e) {
+			log.error("userService.getUserInfo,异常",e);
+			throw new BizException(e.getMessage());
+		}
 		log.info("调用微信接口,解密获取用户信息:"+userInfo);
 
 
@@ -554,6 +567,13 @@ public class AuthServiceImpl {
 		username=result.getOpenid();
 
 		R<SysUser> admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
+
+
+		//feign调用错误
+		if(admin.getCode()==1) {
+			log.error("remoteOpenUserService.info,feign调用失败:"+admin.getMsg());
+			throw new BizException("remoteOpenUserService.info,feign调用失败");
+		}
 
 		//新增
 		if(admin.getData()==null){
@@ -572,7 +592,7 @@ public class AuthServiceImpl {
 			user.setPassword(password);
 
 			//upms新增用户
-			remoteOpenUserService.user(user,SecurityConstants.FROM_IN);
+			R user1 = remoteOpenUserService.user(user, SecurityConstants.FROM_IN);
 
 			//立马查出用户id
 			admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
@@ -583,14 +603,9 @@ public class AuthServiceImpl {
 			bean.setPhone(phoneNumberInfo.getPhoneNumber());
 			bean.setNickname(userInfo.getNickName());
 			bean.setAvatar(userInfo.getAvatarUrl());
+			bean.setOpenid(result.getOpenid());
 
-			oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(admin.getData().getUserId());
-			if(oscUserInfo==null){
-				iOscUserInfoService.getBaseMapper().insert(bean);
-			}
-			else{
-				iOscUserInfoService.getBaseMapper().updateById(bean);
-			}
+			insertOrUpdateUserInfo(bean, admin.getData());
 
 		}
 		//已有用户
@@ -603,17 +618,27 @@ public class AuthServiceImpl {
 			bean.setPhone(phoneNumberInfo.getPhoneNumber());
 			bean.setNickname(userInfo.getNickName());
 			bean.setAvatar(userInfo.getAvatarUrl());
+			bean.setOpenid(result.getOpenid());
 
-			oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(data.getUserId());
-			if(oscUserInfo==null){
-				iOscUserInfoService.getBaseMapper().insert(bean);
-			}
-			else{
-				iOscUserInfoService.getBaseMapper().updateById(bean);
-			}
+			insertOrUpdateUserInfo(bean, data);
 			log.info("更新用户信息成功:{}",bean);
 		}
 
 		return iOscUserInfoService.getBaseMapper().selectById( admin.getData().getUserId());
+	}
+
+	private void insertOrUpdateUserInfo(OscUserInfo bean, SysUser data2) {
+		try {
+			OscUserInfo oscUserInfo;
+			oscUserInfo = iOscUserInfoService.getBaseMapper().selectById(data2.getUserId());
+			if (oscUserInfo == null) {
+				iOscUserInfoService.getBaseMapper().insert(bean);
+			} else {
+				iOscUserInfoService.getBaseMapper().updateById(bean);
+			}
+		} catch (Exception e) {
+			log.error("更新用户信息,异常",e);
+			throw new BizException(e.getMessage());
+		}
 	}
 }
