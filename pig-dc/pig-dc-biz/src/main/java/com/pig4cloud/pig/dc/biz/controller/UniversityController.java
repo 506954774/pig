@@ -102,7 +102,8 @@ public class UniversityController {
 								)
 						)
 						//.like(!TextUtils.isEmpty(dto.getKeyword()),OscUniversity::getStuName, dto.getKeyword())
-				.orderByDesc(OscUniversity::getQsRank)
+				//.orderByDesc(OscUniversity::getQsRank)
+						.orderByDesc(OscUniversity::getUniversitySort)
 
 		);
 		return R.ok(page1);

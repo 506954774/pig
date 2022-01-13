@@ -205,8 +205,6 @@
 			'' content5
 			FROM
 			osc_university   ou
-			LEFT JOIN osc_university_college ouc ON ou.id = ouc.university_id
-			LEFT JOIN osc_college oc ON ouc.college_id = oc.id
 			LEFT JOIN osc_area oa ON ou.area_id = oa.id
 			WHERE
 			ou.del_flag = 0

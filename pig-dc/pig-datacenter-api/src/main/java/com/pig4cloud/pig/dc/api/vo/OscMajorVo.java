@@ -57,7 +57,7 @@ public class OscMajorVo extends Model<OscMajorVo> {
 	private String logoUrl;
 
 	@ApiModelProperty( value = "学校qs排名" , required = true)
-	private Integer qsRank;
+	private String qsRank;
 
 	@ApiModelProperty( value = "国家名称" , required = true)
 	private String countryName;
@@ -67,6 +67,10 @@ public class OscMajorVo extends Model<OscMajorVo> {
 
 	@ApiModelProperty( value = "市区名称" , required = true)
 	private String cityName;
+
+
+	@ApiModelProperty( value = "自定义排序" , required = true)
+	private Integer universitySort;
 
 
 

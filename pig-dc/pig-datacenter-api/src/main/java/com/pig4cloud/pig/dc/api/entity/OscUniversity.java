@@ -55,7 +55,7 @@ public class OscUniversity extends Model<OscUniversity> {
     private String cityName;
 
     @ApiModelProperty( value = "qs排名" , required = true)
-    private Integer qsRank;
+    private String qsRank;
 
     @ApiModelProperty( value = "内容介绍,富文本" , required = true)
     private String content;
@@ -79,5 +79,7 @@ public class OscUniversity extends Model<OscUniversity> {
     @ApiModelProperty( value = "创建人" , required = true)
     private String createBy;
 
+	@ApiModelProperty( value = "自定义排序" , required = true)
+	private Integer universitySort;
 
 }

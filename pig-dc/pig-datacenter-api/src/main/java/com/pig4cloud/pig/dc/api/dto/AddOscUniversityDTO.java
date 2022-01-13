@@ -50,7 +50,7 @@ public class AddOscUniversityDTO extends Model<AddOscUniversityDTO> {
     private String cityName;
 
     @ApiModelProperty( value = "qs排名" , required = true)
-    private Integer qsRank;
+    private String qsRank;
 
     @ApiModelProperty( value = "内容介绍,富文本" , required = true)
     private String content;
@@ -61,6 +61,8 @@ public class AddOscUniversityDTO extends Model<AddOscUniversityDTO> {
     @ApiModelProperty( value = "状态,0正常 1冻结" , required = true)
     private String lockFlag;
 
+	@ApiModelProperty( value = "自定义排序" , required = true)
+	private Integer universitySort;
 
 
 
