@@ -55,7 +55,7 @@
 			and   om.education_level=  #{param.educationLevel}
 		</if>
 		<if test="param.majorType !=null  and param.majorType!=''  ">
-			and   om.major_type=  #{param.majorType}
+			and om.major_type like concat('%', #{param.majorType},'%')
 		</if>
 		<if test="param.areaId !=null  and param.areaId!=''  ">
 			and   ou.area_id=  #{param.areaId}
