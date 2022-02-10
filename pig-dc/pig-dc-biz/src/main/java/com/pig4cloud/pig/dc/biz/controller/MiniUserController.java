@@ -16,10 +16,14 @@
 
 package com.pig4cloud.pig.dc.biz.controller;
 
+import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteOpenUserService;
+import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.dc.api.dto.QueryUniversityPageDTO;
 import com.pig4cloud.pig.dc.api.dto.WechatLoginDto2;
+import com.pig4cloud.pig.dc.api.dto.WechatMiniCode2SessionDTO;
+import com.pig4cloud.pig.dc.api.dto.WechatMiniPhoneDTO;
 import com.pig4cloud.pig.dc.api.entity.OscUserInfo;
 import com.pig4cloud.pig.dc.biz.service.IOscUserInfoService;
 import com.pig4cloud.pig.dc.biz.service.impl.AuthServiceImpl;
@@ -71,6 +75,20 @@ public class MiniUserController {
 	}
 
 
+	@ApiOperation(value = "根据code获取session", notes = "根据code获取session")
+	@PostMapping("/auth/code2session")
+	public R code2session(
+			@RequestBody @Valid WechatMiniCode2SessionDTO dto) {
+		return R.ok(authService.code2session(dto.getCode() ));
+	}
+
+
+	@ApiOperation(value = "提交微信绑定的手机号v2", notes = "提交微信绑定的手机号v2")
+	@PostMapping("/auth/bind_phone/v2")
+	public R bindPhoneV3(@RequestBody @Valid WechatMiniPhoneDTO dto) {
+		return R.ok(authService.bindPhoneV2(dto.getOpenId(),dto.getSessionKey(),dto.getIv(),dto.getEncryptedData() ));
+	}
+
 	@ApiOperation(value = "根据用户id查询个人信息", notes = "根据用户id查询个人信息")
 	@GetMapping("/info/{id}")
 	public R details(@PathVariable Integer id) {
@@ -94,8 +112,13 @@ public class MiniUserController {
 
 
 
-
-
+	@ApiIgnore
+	@GetMapping("/auth/test/{account}")
+	public R registTest(@PathVariable String account){
+		R<SysUser> admin = remoteOpenUserService.info(account, SecurityConstants.FROM_IN);
+		log.info("remoteOpenUserService.info:"+admin);
+		return admin;
+	}
 
 
 

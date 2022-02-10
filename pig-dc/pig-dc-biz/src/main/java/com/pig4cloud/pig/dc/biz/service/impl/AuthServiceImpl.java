@@ -15,12 +15,16 @@
  */
 
 package com.pig4cloud.pig.dc.biz.service.impl;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.security.AlgorithmParameters;
 import java.util.Date;
 
 import cn.binarywang.wx.miniapp.api.WxMaUserService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
+import cn.binarywang.wx.miniapp.util.crypt.WxMaCryptUtils;
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteOpenUserService;
@@ -32,11 +36,15 @@ import com.pig4cloud.pig.dc.api.entity.OscUserInfo;
 import com.pig4cloud.pig.dc.biz.config.Constant;
 import com.pig4cloud.pig.dc.biz.exceptions.BizException;
 import com.pig4cloud.pig.dc.biz.service.IOscUserInfoService;
+import com.pig4cloud.pig.dc.biz.utils.WxUtils;
 import com.ulisesbocchio.jasyptspringboot.encryptor.DefaultLazyEncryptor;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.common.util.crypto.PKCS7Encoder;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.util.TextUtils;
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,6 +63,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -506,6 +517,31 @@ public class AuthServiceImpl {
 		return login(username,password);
 	}
 
+	/**
+	 * @Name:
+	 * @Description: 根据code获取session
+	 * @Param:
+	 * @return:
+	 * @Author: LeiChen
+	 * @Date:2022/2/9 14:40
+	 *
+	 * */
+	public WxMaJscode2SessionResult code2session(String code ) {
+
+		WxMaJscode2SessionResult result = null;
+		try {
+			result = myWxService.getUserService().getSessionInfo(code);
+			log.info("myWxService.getUserService().getSessionInfo(code).."+result);
+		} catch (WxErrorException e) {
+			log.error("myWxService.getUserService(),异常",e);
+			throw new BizException(e.getMessage());
+		}
+
+		return  	result ;
+
+	}
+
+
 	public OscUserInfo bindPhone(String code, String iv, String encryptedData) {
 		OscUserInfo oscUserInfo=null;
 
@@ -537,12 +573,28 @@ public class AuthServiceImpl {
 		log.info("myWxService.getUserService():"+userService);
 		WxMaPhoneNumberInfo phoneNumberInfo = null;
 		try {
-			phoneNumberInfo = userService.getPhoneNoInfo(result.getSessionKey(), encryptedData, iv);
+			//phoneNumberInfo = userService.getPhoneNoInfo(result.getSessionKey(), encryptedData, iv);
+			//
+		/*	AlgorithmParameters params = AlgorithmParameters.getInstance("AES");
+			params.init(new IvParameterSpec(Base64.decodeBase64(iv)));
+			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+			cipher.init(2, new SecretKeySpec(Base64.decodeBase64(result.getSessionKey()), "AES"), params);
+			var json =  new String(PKCS7Encoder.decode(cipher.doFinal(Base64.decodeBase64(encryptedData))), StandardCharsets.UTF_8);*/
+
+			//var json=WxMaCryptUtils.decrypt(result.getSessionKey(), encryptedData, iv);
+
+
+			/////////////更换工具类///////////////////
+			var json  = WxUtils.wxDecrypt(encryptedData, result.getSessionKey(), iv);
+			log.info("============userService.getPhoneNoInfo(),json:"+json);
+			phoneNumberInfo=WxMaPhoneNumberInfo.fromJson(json);
+
+
 		} catch (Exception e) {
 			log.error("userService.getPhoneNoInfo,异常",e);
 			throw new BizException(e.getMessage());
 		}
-		log.info("调用微信接口,解密获取电话号码:"+phoneNumberInfo);
+		//log.info("调用微信接口,解密获取电话号码:"+phoneNumberInfo);
 
 
 		if (phoneNumberInfo==null|| TextUtils.isEmpty(phoneNumberInfo.getPhoneNumber())) {
@@ -550,14 +602,6 @@ public class AuthServiceImpl {
 		}
 
 
-		WxMaUserInfo userInfo = null;
-		try {
-			userInfo = userService.getUserInfo(result.getSessionKey(), encryptedData, iv);
-		} catch (Exception e) {
-			log.error("userService.getUserInfo,异常",e);
-			throw new BizException(e.getMessage());
-		}
-		log.info("调用微信接口,解密获取用户信息:"+userInfo);
 
 
 
@@ -569,11 +613,11 @@ public class AuthServiceImpl {
 		R<SysUser> admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
 
 
-		//feign调用错误
+		/*//feign调用错误
 		if(admin.getCode()==1) {
 			log.error("remoteOpenUserService.info,feign调用失败:"+admin.getMsg());
 			throw new BizException("remoteOpenUserService.info,feign调用失败");
-		}
+		}*/
 
 		//新增
 		if(admin.getData()==null){
@@ -601,8 +645,8 @@ public class AuthServiceImpl {
 			OscUserInfo bean=new OscUserInfo();
 			bean.setUserId(admin.getData().getUserId());
 			bean.setPhone(phoneNumberInfo.getPhoneNumber());
-			bean.setNickname(userInfo.getNickName());
-			bean.setAvatar(userInfo.getAvatarUrl());
+			//bean.setNickname(userInfo.getNickName());
+			//bean.setAvatar(userInfo.getAvatarUrl());
 			bean.setOpenid(result.getOpenid());
 
 			insertOrUpdateUserInfo(bean, admin.getData());
@@ -616,8 +660,8 @@ public class AuthServiceImpl {
 			OscUserInfo bean=new OscUserInfo();
 			bean.setUserId(data.getUserId());
 			bean.setPhone(phoneNumberInfo.getPhoneNumber());
-			bean.setNickname(userInfo.getNickName());
-			bean.setAvatar(userInfo.getAvatarUrl());
+			//bean.setNickname(userInfo.getNickName());
+			//bean.setAvatar(userInfo.getAvatarUrl());
 			bean.setOpenid(result.getOpenid());
 
 			insertOrUpdateUserInfo(bean, data);
@@ -627,6 +671,117 @@ public class AuthServiceImpl {
 		return iOscUserInfoService.getBaseMapper().selectById( admin.getData().getUserId());
 	}
 
+
+	public OscUserInfo bindPhoneV2(String openId, String sessionKey,String iv, String encryptedData) {
+
+		OscUserInfo oscUserInfo=null;
+
+		if(TextUtils.isEmpty(openId)||TextUtils.isEmpty(sessionKey)||TextUtils.isEmpty(iv)||TextUtils.isEmpty(encryptedData)){
+			throw new BizException("参数不合法!");
+		}
+
+
+		WxMaUserService userService = myWxService.getUserService();
+		log.info("myWxService.getUserService():"+userService);
+		WxMaPhoneNumberInfo phoneNumberInfo = null;
+		try {
+			//phoneNumberInfo = userService.getPhoneNoInfo(result.getSessionKey(), encryptedData, iv);
+			//
+		/*	AlgorithmParameters params = AlgorithmParameters.getInstance("AES");
+			params.init(new IvParameterSpec(Base64.decodeBase64(iv)));
+			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+			cipher.init(2, new SecretKeySpec(Base64.decodeBase64(result.getSessionKey()), "AES"), params);
+			var json =  new String(PKCS7Encoder.decode(cipher.doFinal(Base64.decodeBase64(encryptedData))), StandardCharsets.UTF_8);*/
+
+			//var json=WxMaCryptUtils.decrypt(result.getSessionKey(), encryptedData, iv);
+
+
+			/////////////更换工具类///////////////////
+			var json  = WxUtils.wxDecrypt(encryptedData, sessionKey, iv);
+			log.info("============userService.getPhoneNoInfo(),json:"+json);
+			phoneNumberInfo=WxMaPhoneNumberInfo.fromJson(json);
+
+
+		} catch (Exception e) {
+			log.error("userService.getPhoneNoInfo,异常",e);
+			throw new BizException(e.getMessage());
+		}
+		//log.info("调用微信接口,解密获取电话号码:"+phoneNumberInfo);
+
+
+		if (phoneNumberInfo==null|| TextUtils.isEmpty(phoneNumberInfo.getPhoneNumber())) {
+			throw new RuntimeException("参数不合法,解密失败!");
+		}
+
+
+
+
+
+		String username=null;
+		String password=Constant.PASSWORD;
+
+		username=openId;
+
+		R<SysUser> admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
+
+
+		/*//feign调用错误
+		if(admin.getCode()==1) {
+			log.error("remoteOpenUserService.info,feign调用失败:"+admin.getMsg());
+			throw new BizException("remoteOpenUserService.info,feign调用失败");
+		}*/
+
+		//新增
+		if(admin.getData()==null){
+			UserDTO user=new UserDTO();
+			user.setUsername(username);
+
+			List<Integer> roles=new ArrayList<>();
+
+			//这个角色id,注意数据库配置,否则upms会报错
+			roles.add(5);
+			user.setRole(roles);
+			user.setDeptId(1);
+
+			//选填部分的数据
+			user.setPhone(phoneNumberInfo.getPhoneNumber());
+			user.setPassword(password);
+
+			//upms新增用户
+			R user1 = remoteOpenUserService.user(user, SecurityConstants.FROM_IN);
+
+			//立马查出用户id
+			admin = remoteOpenUserService.info(username, SecurityConstants.FROM_IN);
+
+			//更新数据库
+			OscUserInfo bean=new OscUserInfo();
+			bean.setUserId(admin.getData().getUserId());
+			bean.setPhone(phoneNumberInfo.getPhoneNumber());
+			//bean.setNickname(userInfo.getNickName());
+			//bean.setAvatar(userInfo.getAvatarUrl());
+			bean.setOpenid(openId);
+
+			insertOrUpdateUserInfo(bean, admin.getData());
+
+		}
+		//已有用户
+		else{
+			SysUser data = admin.getData();
+
+			//更新数据库
+			OscUserInfo bean=new OscUserInfo();
+			bean.setUserId(data.getUserId());
+			bean.setPhone(phoneNumberInfo.getPhoneNumber());
+			//bean.setNickname(userInfo.getNickName());
+			//bean.setAvatar(userInfo.getAvatarUrl());
+			bean.setOpenid(openId);
+
+			insertOrUpdateUserInfo(bean, data);
+			log.info("更新用户信息成功:{}",bean);
+		}
+
+		return iOscUserInfoService.getBaseMapper().selectById( admin.getData().getUserId());
+	}
 	private void insertOrUpdateUserInfo(OscUserInfo bean, SysUser data2) {
 		try {
 			OscUserInfo oscUserInfo;
