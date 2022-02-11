@@ -53,7 +53,8 @@ public class MiniProductController {
 								. like(OscProduct::getProductName, finalDto.getKeyword())
 								.or(). like(OscProduct::getProductSubName, finalDto.getKeyword()))
 						//.like(!TextUtils.isEmpty(dto.getKeyword()),OscProduct::getProductName, dto.getKeyword())
-				.orderByDesc(OscProduct::getProductPrice)
+				//.orderByDesc(OscProduct::getProductPrice)
+				.orderByDesc(OscProduct::getProductSort)
 
 		);
 		return R.ok(page1);
