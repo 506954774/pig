@@ -16,6 +16,14 @@
 	<description>数据中台-业务</description>
 
 	<dependencies>
+
+		<!--文件管理-->
+		<dependency>
+			<groupId>com.pig4cloud.plugin</groupId>
+			<artifactId>oss-spring-boot-starter</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+
 		<!--upms api、model 模块-->
 		<dependency>
 			<groupId>com.pig4cloud</groupId>
