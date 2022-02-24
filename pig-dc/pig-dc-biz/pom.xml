@@ -17,6 +17,12 @@
 
 	<dependencies>
 
+		<!--引入kafka依赖-->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
 		<!--文件管理-->
 		<dependency>
 			<groupId>com.pig4cloud.plugin</groupId>
