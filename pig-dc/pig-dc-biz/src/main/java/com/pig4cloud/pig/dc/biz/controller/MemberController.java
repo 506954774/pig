@@ -3,9 +3,12 @@ package com.pig4cloud.pig.dc.biz.controller;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.dc.api.dto.MemberExcelVo;
 import com.pig4cloud.pig.dc.api.dto.QueryPageDTO;
 import com.pig4cloud.pig.dc.api.entity.OscUserInfo;
 import com.pig4cloud.pig.dc.biz.service.IOscUserInfoService;
+import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
+import com.pig4cloud.plugin.excel.annotation.Sheet;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -13,6 +16,7 @@ import org.apache.http.util.TextUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author LeiChen
@@ -107,5 +111,16 @@ public class MemberController {
 	}*/
 
 
+	/**
+	 * 导出会员列表
+	 * @return R
+	 */
+
+	@ResponseExcel(name = "member-list" ,sheets = {@Sheet(sheetName="会员列表")} )
+	@ApiOperation(  value = " 导出会员列表", notes = " 导出会员列表")
+	@PostMapping("/list/export")
+	public List<MemberExcelVo> listExport(@RequestHeader(name = "TENANT-ID") Integer tenantId    , @RequestBody QueryPageDTO qo ) {
+		return  iOscUserInfoService.exportMemberList(qo ) ;
+	}
 
 }
