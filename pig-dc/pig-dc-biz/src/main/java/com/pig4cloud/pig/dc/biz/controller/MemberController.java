@@ -119,7 +119,7 @@ public class MemberController {
 	@ResponseExcel(name = "member-list" ,sheets = {@Sheet(sheetName="会员列表")} )
 	@ApiOperation(  value = " 导出会员列表", notes = " 导出会员列表")
 	@PostMapping("/list/export")
-	public List<MemberExcelVo> listExport(@RequestHeader(name = "TENANT-ID") Integer tenantId    , @RequestBody QueryPageDTO qo ) {
+	public List<MemberExcelVo> listExport( @RequestBody QueryPageDTO qo ) {
 		return  iOscUserInfoService.exportMemberList(qo ) ;
 	}
 
