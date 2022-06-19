@@ -15,18 +15,25 @@
  */
 
 package com.pig4cloud.pig.dc.biz.controller;
+import java.time.LocalDateTime;
 
 import cn.hutool.http.HttpUtil;
+import com.pig4cloud.pig.admin.api.entity.SysLog;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
+import com.pig4cloud.pig.admin.api.feign.RemoteLogService;
 import com.pig4cloud.pig.admin.api.feign.RemoteOpenUserService;
-import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.common.security.annotation.Inner;
 import com.pig4cloud.pig.dc.api.dto.WechatLoginDto2;
 import com.pig4cloud.pig.dc.api.dto.WechatMiniCode2SessionDTO;
 import com.pig4cloud.pig.dc.api.dto.WechatMiniPhoneDTO;
+import com.pig4cloud.pig.dc.api.entity.OscNews;
 import com.pig4cloud.pig.dc.api.entity.OscUserInfo;
+import com.pig4cloud.pig.dc.biz.mapper.OscNewsMapper;
 import com.pig4cloud.pig.dc.biz.service.IOscUserInfoService;
 import com.pig4cloud.pig.dc.biz.service.impl.AuthServiceImpl;
+import com.pig4cloud.pig.dc.biz.service.impl.TestServiceImpl;
+import io.seata.spring.annotation.GlobalTransactional;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +46,10 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+import sun.security.util.SecurityConstants;
 
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
@@ -57,6 +66,15 @@ import java.util.Date;
 @RequestMapping("/mini/test")
 @Api(value = "MiniTestController", tags = "小程序-内部测试接口")
 public class MiniTestController {
+
+	private final TestServiceImpl testService;
+
+	//service里面开启了分布式事务
+	@ApiOperation(value = "测试seata分布式事务", notes = "测试seata分布式事务")
+	@GetMapping("/seate/{id}")
+	public R seataTest(@PathVariable Integer id ) {
+		return testService.seataTest(id);
+	}
 
 
 	@ApiOperation(value = "导入excel", notes = "导入excel")

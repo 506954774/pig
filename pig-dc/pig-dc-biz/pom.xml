@@ -17,6 +17,12 @@
 
 	<dependencies>
 
+		<dependency>
+			<groupId>com.pig4cloud</groupId>
+			<artifactId>pig-common-seata</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+
 		<!--poi-->
 		<dependency>
 			<groupId>org.apache.poi</groupId>

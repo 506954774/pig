@@ -24,6 +24,7 @@ import com.pig4cloud.pig.common.security.annotation.Inner;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -72,6 +73,7 @@ public class LogController {
 	 * @return success/false
 	 */
 	@Inner
+	//@Transactional(rollbackFor = Exception.class)
 	@PostMapping
 	public R save(@Valid @RequestBody SysLog sysLog) {
 		return R.ok(sysLogService.save(sysLog));
