@@ -20,6 +20,7 @@ import com.pig4cloud.pig.admin.api.entity.SysMenu;
 import com.pig4cloud.pig.admin.service.SysMenuService;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
+import com.pig4cloud.pig.common.security.annotation.Inner;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -124,6 +125,20 @@ public class MenuController {
 	@PreAuthorize("@pms.hasPermission('sys_menu_edit')")
 	public R update(@Valid @RequestBody SysMenu sysMenu) {
 		return R.ok(sysMenuService.updateMenuById(sysMenu));
+	}
+
+
+	/**
+	 * 返回树形菜单集合
+	 * @param lazy 是否是懒加载
+	 * @param parentId 父节点ID
+	 * @return 树形菜单
+	 */
+	@Inner(value = false)
+	@GetMapping(value = "/treeinner")
+	public R getTreeInner(boolean lazy, Integer parentId) {
+		//return R.ok(sysMenuService.treeMenu(lazy, parentId));
+		return R.ok(sysMenuService.treeMenu(lazy, parentId));
 	}
 
 }
