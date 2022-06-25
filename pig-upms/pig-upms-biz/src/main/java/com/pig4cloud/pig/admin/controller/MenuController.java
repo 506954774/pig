@@ -135,10 +135,21 @@ public class MenuController {
 	 * @return 树形菜单
 	 */
 	@Inner(value = false)
-	@GetMapping(value = "/treeinner")
-	public R getTreeInner(boolean lazy, Integer parentId) {
+	@GetMapping(value = "/treeinner/{id}")
+	public R getTreeInner(@PathVariable Integer id,boolean lazy, Integer parentId) {
 		//return R.ok(sysMenuService.treeMenu(lazy, parentId));
 		return R.ok(sysMenuService.treeMenu(lazy, parentId));
+	}
+
+
+	/**
+	 * 测试
+	 * @return ""
+	 */
+	@Inner(value = false)
+	@GetMapping( "/test")
+	public R test() {
+		return R.ok("");
 	}
 
 }
