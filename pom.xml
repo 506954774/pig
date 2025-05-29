@@ -26,10 +26,10 @@
 		<version>3.2.2</version>
 	</parent>
 
-	<groupId>com.pig4cloud</groupId>
-	<artifactId>pig</artifactId>
+	<groupId>com.ynlk4cloud</groupId>
+	<artifactId>ynlk</artifactId>
 	<name>${project.artifactId}</name>
-	<version>3.2.2</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<url>https://www.pig4cloud.com</url>
 
@@ -59,6 +59,7 @@
 		<docker.password>password</docker.password>
 		<version.weixin-java-miniapp>3.9.0</version.weixin-java-miniapp>
 		<version.weixin-java-mp>3.9.0</version.weixin-java-mp>
+		<version.app>1.0.0</version.app>
 	</properties>
 
 	<dependencies>
@@ -105,13 +106,13 @@
 	</dependencies>
 
 	<modules>
-		<module>pig-register</module>
-		<module>pig-gateway</module>
-		<module>pig-auth</module>
-		<module>pig-upms</module>
-		<module>pig-common</module>
-		<module>pig-visual</module>
-		<module>pig-dc</module>
+		<module>ynlk-register</module>
+		<module>ynlk-gateway</module>
+		<module>ynlk-auth</module>
+		<module>ynlk-upms</module>
+		<module>ynlk-common</module>
+		<module>ynlk-visual</module>
+		<module>ynlk-dc</module>
 	</modules>
 
 	<dependencyManagement>
