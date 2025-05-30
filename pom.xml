@@ -106,12 +106,10 @@
 	</dependencies>
 
 	<modules>
-		<module>ynlk-register</module>
 		<module>ynlk-gateway</module>
 		<module>ynlk-auth</module>
 		<module>ynlk-upms</module>
 		<module>ynlk-common</module>
-		<module>ynlk-visual</module>
 		<module>ynlk-dc</module>
 	</modules>
 
