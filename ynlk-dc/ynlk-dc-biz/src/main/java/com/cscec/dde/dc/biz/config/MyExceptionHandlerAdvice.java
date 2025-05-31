@@ -1,6 +1,6 @@
 package com.cscec.dde.dc.biz.config;
 
-import com.cscec.dde.budget.biz.exceptions.BizException;
+import com.cscec.dde.dc.biz.exceptions.BizException;
 import com.google.common.base.Throwables;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.security.exception.UnauthorizedException;

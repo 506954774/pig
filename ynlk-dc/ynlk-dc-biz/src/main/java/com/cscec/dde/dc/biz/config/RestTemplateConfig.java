@@ -1,6 +1,6 @@
 package com.cscec.dde.dc.biz.config;
 
-import com.cscec.dde.budget.biz.config.RtErrorHandler;
+import com.cscec.dde.dc.biz.config.RtErrorHandler;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
