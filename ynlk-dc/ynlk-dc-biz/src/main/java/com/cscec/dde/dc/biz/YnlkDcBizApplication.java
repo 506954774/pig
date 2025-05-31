@@ -1,0 +1,23 @@
+package com.cscec.dde.dc.biz;
+
+import com.pig4cloud.pig.common.feign.annotation.EnablePigFeignClients;
+import com.pig4cloud.pig.common.security.annotation.EnablePigResourceServer;
+import com.pig4cloud.pig.common.swagger.annotation.EnablePigSwagger2;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+
+@EnablePigSwagger2
+@EnablePigResourceServer
+@EnablePigFeignClients
+@EnableDiscoveryClient
+@SpringBootApplication
+@EnableCaching
+public class YnlkDcBizApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(YnlkDcBizApplication.class, args);
+	}
+
+}

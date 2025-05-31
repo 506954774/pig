@@ -1,16 +1,5 @@
 ${AnsiColor.BRIGHT_YELLOW}
-
-                :::::::::       :::::::::::       ::::::::
-               :+:    :+:          :+:          :+:    :+:
-              +:+    +:+          +:+          +:+
-             +#++:++#+           +#+          :#:
-            +#+                 +#+          +#+   +#+#
-           #+#                 #+#          #+#    #+#
-          ###             ###########       ########
-
-                       www.pig4cloud.com
-
-                  Pig Microservice Architecture
+                    服务启动...
 ${AnsiColor.DEFAULT}
 
 

@@ -1,0 +1,27 @@
+server:
+  port: 5555
+
+spring:
+  application:
+    name: ynlk-budget-biz
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 47.106.219.250:18848
+        username: admin
+        password: Ynlk_2022
+        namespace: dev_chenxi
+
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        username: ${spring.cloud.nacos.discovery.username}
+        password: ${spring.cloud.nacos.discovery.password}
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        file-extension: yml
+        shared-configs:
+          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+  profiles:
+    active: dev
+
+
+

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.ynlk4cloud</groupId>
+		<artifactId>ynlk-budget</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<groupId>com.ynlk4cloud</groupId>
+	<artifactId>ynlk-budget-biz</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0.0</version>
+	<name>ynlk-budget-biz</name>
+	<description>预算中台-业务</description>
+
+	<dependencies>
+
+		<!--<dependency>
+			<groupId>com.ynlk4cloud</groupId>
+			<artifactId>ynlk-common-seata</artifactId>
+			<version>1.0.0</version>
+		</dependency>-->
+
+		<!--poi-->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>4.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>4.1.2</version>
+		</dependency>
+
+		<!--引入kafka依赖-->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
+		<!--文件管理-->
+		<dependency>
+			<groupId>com.pig4cloud.plugin</groupId>
+			<artifactId>oss-spring-boot-starter</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+
+		<!--upms api、model 模块-->
+		<dependency>
+			<groupId>com.ynlk4cloud</groupId>
+			<artifactId>ynlk-budget-api</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!--安全模块-->
+		<dependency>
+			<groupId>com.ynlk4cloud</groupId>
+			<artifactId>ynlk-common-security</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!--日志处理-->
+		<dependency>
+			<groupId>com.ynlk4cloud</groupId>
+			<artifactId>ynlk-common-log</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!--接口文档-->
+		<dependency>
+			<groupId>com.ynlk4cloud</groupId>
+			<artifactId>ynlk-common-swagger</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!--mybatis 模块-->
+		<dependency>
+			<groupId>com.ynlk4cloud</groupId>
+			<artifactId>ynlk-common-mybatis</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!--mq-->
+		<dependency>
+			<groupId>com.ynlk4cloud</groupId>
+			<artifactId>ynlk-common-mq</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!--注册中心客户端-->
+		<dependency>
+			<groupId>com.alibaba.cloud</groupId>
+			<artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+		</dependency>
+		<!--配置中心客户端-->
+		<dependency>
+			<groupId>com.alibaba.cloud</groupId>
+			<artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+		</dependency>
+		<!--undertow容器-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cn.felord</groupId>
+			<artifactId>payment-spring-boot-starter</artifactId>
+			<version>1.0.11.RELEASE</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<!-- 过滤后缀为pem、pfx的证书文件 -->
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>p12</nonFilteredFileExtension>
+						<nonFilteredFileExtension>pem</nonFilteredFileExtension>
+						<nonFilteredFileExtension>pfx</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>

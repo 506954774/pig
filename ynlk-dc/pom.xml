@@ -17,7 +17,7 @@
 	<description>数据中台</description>
 
 	<modules>
-		<module>ynlk-datacenter-api</module>
+		<module>ynlk-dc-api</module>
 		<module>ynlk-dc-biz</module>
 	</modules>
 

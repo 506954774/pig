@@ -111,6 +111,7 @@
 		<module>ynlk-upms</module>
 		<module>ynlk-common</module>
 		<module>ynlk-dc</module>
+		<module>ynlk-budget</module>
 	</modules>
 
 	<dependencyManagement>

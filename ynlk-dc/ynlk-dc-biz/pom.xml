@@ -17,11 +17,11 @@
 
 	<dependencies>
 
-		<dependency>
+		<!--<dependency>
 			<groupId>com.ynlk4cloud</groupId>
 			<artifactId>ynlk-common-seata</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+		</dependency>-->
 
 		<!--poi-->
 		<dependency>
@@ -51,7 +51,7 @@
 		<!--upms api、model 模块-->
 		<dependency>
 			<groupId>com.ynlk4cloud</groupId>
-			<artifactId>ynlk-datacenter-api</artifactId>
+			<artifactId>ynlk-dc-api</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<!--安全模块-->
@@ -100,16 +100,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-undertow</artifactId>
-		</dependency>
-		<!-- 小程序 -->
-		<dependency>
-			<groupId>com.github.binarywang</groupId>
-			<artifactId>weixin-java-miniapp</artifactId>
-		</dependency>
-		<!--微信依赖-->
-		<dependency>
-			<groupId>com.github.binarywang</groupId>
-			<artifactId>weixin-java-mp</artifactId>
 		</dependency>
 
 		<dependency>
